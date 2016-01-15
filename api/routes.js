@@ -4,7 +4,7 @@ var rendering = require('./util/rendering'),
 module.exports = function (app) {
      app.get('/', apiController.home);
 
-      app.get("/subjects/:subjectId/classes", apiController.getClasses);
+     app.get("/subjects/:subjectId/classes", apiController.getClasses);
 
      app.get("/terms", apiController.getTerms);
 

@@ -1,5 +1,5 @@
 var rendering = require('../util/rendering');
-
+var Terms = require("../entities/terms");
 
 exports.home = function(req, res) {
      res.send({
@@ -50,14 +50,13 @@ exports.getClasses = function(req, res) {
 };
 
 exports.getTerms = function(req, res) {
-  res.send([{
-              id: "0",
-              name: "Spring 2016"
-            }, {
-              id: "1",
-              name: "Winter 2016"
-            }]
-          );
+  new Terms().fetchAll()
+    .then(function(terms) {
+      res.send(terms.toJSON());
+    }).catch(function(error) {
+      console.log(error);
+      res.send('An error occured');
+    });
 };
 
 exports.getSubjects = function(req, res) {
