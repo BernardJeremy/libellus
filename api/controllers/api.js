@@ -18,7 +18,8 @@ exports.home = function(req, res) {
 };
 
 exports.getClasses = function(req, res) {
-  new Classes().fetchAll()
+  var subjectId = req.params.subjectId;
+  new Classes().where("fk_subject", subjectId)
   .then(function(classes) {
     res.send(classes.toJSON());
   }).catch(function(error) {
