@@ -1,8 +1,12 @@
 import { combineReducers } from 'redux'
 import { routeReducer as router } from 'redux-simple-router'
-import counter from './modules/counter'
+import filters from './modules/filters'
+import terms from './modules/terms'
+import subjects from './modules/subjects'
 
 export default combineReducers({
-  counter,
+  filters,
+  terms,
+  subjects,
   router
 })
