@@ -6,6 +6,7 @@
   // Just remove them if they're not what you want
   html {
     box-sizing: border-box;
+    font-family: 'Roboto', sans-serif;
   }
 
   html,
@@ -18,6 +19,6 @@
   *,
   *:before,
   *:after {
-    box-sizing: inherit;
+    box-sizing: border-box;
   }
 }

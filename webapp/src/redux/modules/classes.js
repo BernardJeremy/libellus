@@ -1,4 +1,5 @@
 import { createAction, handleActions } from 'redux-actions'
+import _ from 'lodash'
 
 export const CLASSES_LOAD = 'CLASSES_LOAD'
 export const CLASSES_LOADED = 'CLASSES_LOADED'
@@ -21,7 +22,15 @@ export const actions = {
 export default handleActions({
   [CLASSES_LOAD]: (state) => { return {...state, loading: true, failure: false, content: []} },
   [CLASSES_LOADED]: (state, { result }) => {
-    return {...state, loading: false, failure: false, content: result}
+    const classes = _.chain(result).map((currentClass) => {
+      return _.map(currentClass.time, (time) => {
+        const classTime = _.clone(currentClass)
+        classTime.otherTimes = _.without(currentClass.time, time)
+        classTime.time = time
+        return classTime
+      })
+    }).flatten().value()
+    return {...state, loading: false, failure: false, content: classes}
   },
   [CLASSES_LOAD_FAIL]: (state, { payload }) => {
     return {...state, loading: false, failure: true, content: []}
