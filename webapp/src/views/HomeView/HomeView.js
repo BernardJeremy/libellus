@@ -3,6 +3,7 @@ import { connect } from 'react-redux'
 import classes from './HomeView.scss'
 
 import CalendarFilter from 'components/CalendarFilter/CalendarFilter.js'
+import Calendar from 'components/Calendar/Calendar.js'
 
 const mapStateToProps = (state) => ({
 })
@@ -17,6 +18,7 @@ export class HomeView extends React.Component {
           <h1>Libellus for CSULB</h1>
         </div>
         <CalendarFilter/>
+        <Calendar/>
       </div>
     )
   }
