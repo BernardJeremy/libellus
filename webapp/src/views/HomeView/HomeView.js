@@ -1,6 +1,5 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import { actions as counterActions } from '../../redux/modules/counter'
 import classes from './HomeView.scss'
 
 import CalendarFilter from 'components/CalendarFilter/CalendarFilter.js'
@@ -23,4 +22,4 @@ export class HomeView extends React.Component {
   }
 }
 
-export default connect(mapStateToProps, counterActions)(HomeView)
+export default connect(mapStateToProps, {})(HomeView)

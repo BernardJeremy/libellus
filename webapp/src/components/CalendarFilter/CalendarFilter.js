@@ -3,6 +3,7 @@ import { connect } from 'react-redux'
 import { changeTerm, changeSubject } from 'redux/modules/filters'
 import { load as loadTerms } from 'redux/modules/terms'
 import { load as loadSubjects } from 'redux/modules/subjects'
+import { load as loadClasses } from 'redux/modules/classes'
 // import classes from './CalendarFilter.scss'
 
 const mapStateToProps = (state) => ({
@@ -15,6 +16,7 @@ export class CalendarFilter extends React.Component {
     filters: PropTypes.object.isRequired,
     changeTerm: PropTypes.func.isRequired,
     changeSubject: PropTypes.func.isRequired,
+    loadClasses: PropTypes.func.isRequired,
     loadTerms: PropTypes.func.isRequired,
     loadSubjects: PropTypes.func.isRequired,
     terms: PropTypes.arrayOf(PropTypes.object),
@@ -28,10 +30,12 @@ export class CalendarFilter extends React.Component {
 
   termChanged (e) {
     this.props.changeTerm(e.target.value)
+    this.props.loadClasses({subjectId: this.props.filters.subjectId, termId: e.target.value})
   }
 
   subjectChanged (e) {
     this.props.changeSubject(e.target.value)
+    this.props.loadClasses({subjectId: e.target.value, termId: this.props.filters.termId})
   }
 
   render () {
@@ -48,12 +52,14 @@ export class CalendarFilter extends React.Component {
           <div className='form-group col-md-6'>
             <label>Term</label>
             <select value={this.props.filters.termId} onChange={this.termChanged.bind(this)} className='form-control'>
+              <option/>
               {terms}
             </select>
           </div>
           <div className='form-group col-md-6'>
             <label>Subject</label>
             <select value={this.props.filters.subjectId} onChange={this.subjectChanged.bind(this)} className='form-control'>
+              <option/>
               {subjects}
             </select>
           </div>
@@ -63,4 +69,4 @@ export class CalendarFilter extends React.Component {
   }
 }
 
-export default connect(mapStateToProps, {changeTerm, changeSubject, loadTerms, loadSubjects})(CalendarFilter)
+export default connect(mapStateToProps, {changeTerm, changeSubject, loadTerms, loadSubjects, loadClasses})(CalendarFilter)

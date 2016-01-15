@@ -24,6 +24,95 @@ const mocks = {
       'name': 'American Language Institute',
       'code': 'ALI'
     }
+  ],
+  ['/subjects/0/classes']: [
+    {
+      'id': '0',
+      'name': 'Operating System',
+      'code': '326',
+      'description': 'xxxxxxxxxxxxxxxxx',
+      'room': 'VEC-250',
+      'teacher': {
+        'name': 'Brian Velasquez',
+        'rate': '5',
+        'rate_link': 'http://www.ratemyprofessors.com/ShowRatings.jsp?tid=446598'
+      },
+      'capacity': {
+        'total_capacity': '20',
+        'enrollment': '12',
+        'wait_list': '0'
+      },
+      'time': [
+        {
+          'day': 'Mon',
+          'start': '10:30',
+          'end': '13:30'
+        },
+        {
+          'day': 'Wed',
+          'start': '10:30',
+          'end': '13:30'
+        }
+      ]
+    },
+    {
+      'id': '1',
+      'name': 'Algorithms & Data Structures',
+      'code': '328',
+      'description': 'xxxxxxxxxxxxxxxxx',
+      'room': 'VEC-250',
+      'teacher': {
+        'name': 'Brian Velasquez',
+        'rate': '5',
+        'rate_link': 'http://www.ratemyprofessors.com/ShowRatings.jsp?tid=446598'
+      },
+      'capacity': {
+        'total_capacity': '20',
+        'enrollment': '12',
+        'wait_list': '0'
+      },
+      'time': [
+        {
+          'day': 'Mon',
+          'start': '10:30',
+          'end': '13:30'
+        },
+        {
+          'day': 'Wed',
+          'start': '10:30',
+          'end': '13:30'
+        }
+      ]
+    },
+    {
+      'id': '..+1',
+      'name': '.NET Application',
+      'code': '475',
+      'description': 'xxxxxxxxxxxxxxxxx',
+      'room': 'VEC-250',
+      'teacher': {
+        'name': 'Brian Velasquez',
+        'rate': '5',
+        'rate_link': 'http://www.ratemyprofessors.com/ShowRatings.jsp?tid=446598'
+      },
+      'capacity': {
+        'total_capacity': '20',
+        'enrollment': '12',
+        'wait_list': '0'
+      },
+      'time': [
+        {
+          'day': 'Mon',
+          'start': '10:30',
+          'end': '13:30'
+        },
+        {
+          'day': 'Wed',
+          'start': '10:30',
+          'end': '13:30'
+        }
+      ]
+    }
   ]
 
 }
