@@ -1,7 +1,7 @@
 .tick {
   width: 100%;
   position: relative;
-  p {
+  & > p {
     font-size: 10px;
     position: absolute;
     bottom: 2px;
@@ -18,4 +18,8 @@
     height: 1px;
     background-color: rgb(179, 179, 179);
   }
+}
+.class-container {
+  position: absolute;
+  padding: 0 5px;
 }

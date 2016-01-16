@@ -45,12 +45,12 @@ const mocks = {
       'time': [
         {
           'day': 'Mon',
-          'start': '10:30',
+          'start': '9:00',
           'end': '13:30'
         },
         {
           'day': 'Wed',
-          'start': '10:30',
+          'start': '11:30',
           'end': '13:30'
         }
       ]
@@ -79,7 +79,7 @@ const mocks = {
         },
         {
           'day': 'Wed',
-          'start': '10:30',
+          'start': '10:00',
           'end': '13:30'
         }
       ]
@@ -109,7 +109,7 @@ const mocks = {
         {
           'day': 'Wed',
           'start': '10:30',
-          'end': '13:30'
+          'end': '15:30'
         }
       ]
     }
