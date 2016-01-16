@@ -1,0 +1,17 @@
+{
+  "name": "mycsulb-scrapper",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "casper": "0.1.1",
+    "navit": "2.0.2",
+    "phantomjs": "1.9.19",
+    "webdriverio": "3.4.0"
+  }
+}
