@@ -12,6 +12,7 @@ SET client_min_messages = warning;
 SET search_path = public, pg_catalog;
 
 ALTER TABLE ONLY public.schedule DROP CONSTRAINT schedule_fk_class_fkey;
+ALTER TABLE ONLY public.class DROP CONSTRAINT class_fk_term_fkey;
 ALTER TABLE ONLY public.class DROP CONSTRAINT class_fk_teacher_fkey;
 ALTER TABLE ONLY public.class DROP CONSTRAINT class_fk_subject_fkey;
 ALTER TABLE ONLY public.term DROP CONSTRAINT term_pkey;
@@ -89,7 +90,8 @@ CREATE TABLE class (
     open boolean,
     total_capacity integer,
     section text,
-    wait_list integer
+    wait_list integer,
+    fk_term integer
 );
 
 
@@ -293,9 +295,9 @@ ALTER TABLE ONLY term ALTER COLUMN id SET DEFAULT nextval('term_id_seq'::regclas
 -- Data for Name: class; Type: TABLE DATA; Schema: public; Owner: dev
 --
 
-COPY class (id, fk_teacher, fk_subject, code, name, number, enrollment, room, description, open, total_capacity, section, wait_list) FROM stdin;
-1	1	1	328	Operating System	2564	14	VEC-115	Some explanation about system call and OS management	t	21	SEM001	0
-2	1	1	328	Operating System	2564	14	VEC-115	Some explanation about system call and OS management	t	21	\N	0
+COPY class (id, fk_teacher, fk_subject, code, name, number, enrollment, room, description, open, total_capacity, section, wait_list, fk_term) FROM stdin;
+1	1	1	328	Operating System	2564	14	VEC-115	Some explanation about system call and OS management	t	21	SEM001	0	1
+2	1	1	328	Operating System	2564	14	VEC-115	Some explanation about system call and OS management	t	21	\N	0	2
 \.
 
 
@@ -430,6 +432,14 @@ ALTER TABLE ONLY class
 
 ALTER TABLE ONLY class
     ADD CONSTRAINT class_fk_teacher_fkey FOREIGN KEY (fk_teacher) REFERENCES teacher(id);
+
+
+--
+-- Name: class_fk_term_fkey; Type: FK CONSTRAINT; Schema: public; Owner: dev
+--
+
+ALTER TABLE ONLY class
+    ADD CONSTRAINT class_fk_term_fkey FOREIGN KEY (fk_term) REFERENCES term(id);
 
 
 --

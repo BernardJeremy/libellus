@@ -1,4 +1,6 @@
 var rendering = require('../util/rendering');
+var url = require('url');
+
 var Terms = require("../entities/terms");
 var Subjects = require("../entities/subjects");
 var Classes = require("../entities/classes");
@@ -12,6 +14,8 @@ exports.home = function(req, res) {
 
 exports.getClasses = function(req, res) {
   var subjectId = req.params.subjectId;
+  var termId = url.parse(req.url, true).query.term;
+
   new ClassesCollection()
   .fetch({withRelated: ['schedules', 'teacher']})
   .then(function(classes) {
@@ -19,6 +23,14 @@ exports.getClasses = function(req, res) {
 
     for (var i in completeJson) {
       var json = completeJson[i];
+
+      if (typeof termId !== 'undefined') {
+        if (json.fk_term != termId) {
+          delete completeJson[i];
+          continue;
+        }
+      }
+
       var teacherId = json.fk_teacher;
       json.capacity = {};
       json.capacity.wait_list = json.wait_list;
@@ -35,6 +47,7 @@ exports.getClasses = function(req, res) {
       }
 
       delete json.fk_teacher;
+      delete json.fk_term;
       delete json.teacher.id;
       delete json.fk_subject;
       delete json.total_capacity;

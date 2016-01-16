@@ -1,6 +1,7 @@
 var Bookshelf = require("../database/bookshelf");
 var Schedule = require ("./schedules");
 var Teacher = require ("./teachers");
+var Term = require ("./terms");
 
 module.exports = Bookshelf.Model.extend({
   tableName: 'class',
@@ -9,5 +10,8 @@ module.exports = Bookshelf.Model.extend({
   },
   teacher: function() {
     return this.belongsTo(Teacher, "fk_teacher");
+  },
+  term: function() {
+    return this.belongsTo(Term, "fk_term");
   }
 });
