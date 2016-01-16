@@ -11,15 +11,18 @@ SET client_min_messages = warning;
 
 SET search_path = public, pg_catalog;
 
+ALTER TABLE ONLY public.schedule DROP CONSTRAINT schedule_fk_class_fkey;
 ALTER TABLE ONLY public.class DROP CONSTRAINT class_fk_teacher_fkey;
 ALTER TABLE ONLY public.class DROP CONSTRAINT class_fk_subject_fkey;
 ALTER TABLE ONLY public.term DROP CONSTRAINT term_pkey;
 ALTER TABLE ONLY public.teacher DROP CONSTRAINT teacher_pkey;
 ALTER TABLE ONLY public.subject DROP CONSTRAINT subject_pkey;
+ALTER TABLE ONLY public.schedule DROP CONSTRAINT schedule_pkey;
 ALTER TABLE ONLY public.class DROP CONSTRAINT class_pkey;
 ALTER TABLE public.term ALTER COLUMN id DROP DEFAULT;
 ALTER TABLE public.teacher ALTER COLUMN id DROP DEFAULT;
 ALTER TABLE public.subject ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE public.schedule ALTER COLUMN id DROP DEFAULT;
 ALTER TABLE public.class ALTER COLUMN id DROP DEFAULT;
 DROP SEQUENCE public.term_id_seq;
 DROP TABLE public.term;
@@ -27,6 +30,8 @@ DROP SEQUENCE public.teacher_id_seq;
 DROP TABLE public.teacher;
 DROP SEQUENCE public.subject_id_seq;
 DROP TABLE public.subject;
+DROP SEQUENCE public.schedule_id_seq;
+DROP TABLE public.schedule;
 DROP SEQUENCE public.class_id_seq;
 DROP TABLE public.class;
 DROP EXTENSION plpgsql;
@@ -81,8 +86,6 @@ CREATE TABLE class (
     enrollment integer,
     room character varying(100),
     description text,
-    "time" character varying(100),
-    days character varying(100),
     open boolean,
     total_capacity integer,
     section text,
@@ -111,6 +114,42 @@ ALTER TABLE class_id_seq OWNER TO dev;
 --
 
 ALTER SEQUENCE class_id_seq OWNED BY class.id;
+
+
+--
+-- Name: schedule; Type: TABLE; Schema: public; Owner: dev; Tablespace: 
+--
+
+CREATE TABLE schedule (
+    id integer NOT NULL,
+    day character(3),
+    start character(5),
+    finish character(5),
+    fk_class integer NOT NULL
+);
+
+
+ALTER TABLE schedule OWNER TO dev;
+
+--
+-- Name: schedule_id_seq; Type: SEQUENCE; Schema: public; Owner: dev
+--
+
+CREATE SEQUENCE schedule_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE schedule_id_seq OWNER TO dev;
+
+--
+-- Name: schedule_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: dev
+--
+
+ALTER SEQUENCE schedule_id_seq OWNED BY schedule.id;
 
 
 --
@@ -155,8 +194,7 @@ CREATE TABLE teacher (
     id integer NOT NULL,
     name character varying(100),
     rate numeric,
-    rate_link character varying(100),
-    refresh timestamp
+    rate_link character varying(100)
 );
 
 
@@ -227,6 +265,13 @@ ALTER TABLE ONLY class ALTER COLUMN id SET DEFAULT nextval('class_id_seq'::regcl
 -- Name: id; Type: DEFAULT; Schema: public; Owner: dev
 --
 
+ALTER TABLE ONLY schedule ALTER COLUMN id SET DEFAULT nextval('schedule_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: dev
+--
+
 ALTER TABLE ONLY subject ALTER COLUMN id SET DEFAULT nextval('subject_id_seq'::regclass);
 
 
@@ -248,8 +293,9 @@ ALTER TABLE ONLY term ALTER COLUMN id SET DEFAULT nextval('term_id_seq'::regclas
 -- Data for Name: class; Type: TABLE DATA; Schema: public; Owner: dev
 --
 
-COPY class (id, fk_teacher, fk_subject, code, name, number, enrollment, room, description, "time", days, open, total_capacity, section, wait_list) FROM stdin;
-1	1	1	328	Operating System	2564	14	VEC-115	Some explanation about system call and OS management	10h30-12h30	Mon	t	21	SEM001	0
+COPY class (id, fk_teacher, fk_subject, code, name, number, enrollment, room, description, open, total_capacity, section, wait_list) FROM stdin;
+1	1	1	328	Operating System	2564	14	VEC-115	Some explanation about system call and OS management	t	21	SEM001	0
+2	1	1	328	Operating System	2564	14	VEC-115	Some explanation about system call and OS management	t	21	\N	0
 \.
 
 
@@ -257,7 +303,25 @@ COPY class (id, fk_teacher, fk_subject, code, name, number, enrollment, room, de
 -- Name: class_id_seq; Type: SEQUENCE SET; Schema: public; Owner: dev
 --
 
-SELECT pg_catalog.setval('class_id_seq', 1, true);
+SELECT pg_catalog.setval('class_id_seq', 2, true);
+
+
+--
+-- Data for Name: schedule; Type: TABLE DATA; Schema: public; Owner: dev
+--
+
+COPY schedule (id, day, start, finish, fk_class) FROM stdin;
+6	FRY	10:00	12:15	2
+2	MON	10:30	12:30	1
+3	WED	15:00	18:15	1
+\.
+
+
+--
+-- Name: schedule_id_seq; Type: SEQUENCE SET; Schema: public; Owner: dev
+--
+
+SELECT pg_catalog.setval('schedule_id_seq', 6, true);
 
 
 --
@@ -321,6 +385,14 @@ ALTER TABLE ONLY class
 
 
 --
+-- Name: schedule_pkey; Type: CONSTRAINT; Schema: public; Owner: dev; Tablespace: 
+--
+
+ALTER TABLE ONLY schedule
+    ADD CONSTRAINT schedule_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: subject_pkey; Type: CONSTRAINT; Schema: public; Owner: dev; Tablespace: 
 --
 
@@ -358,6 +430,14 @@ ALTER TABLE ONLY class
 
 ALTER TABLE ONLY class
     ADD CONSTRAINT class_fk_teacher_fkey FOREIGN KEY (fk_teacher) REFERENCES teacher(id);
+
+
+--
+-- Name: schedule_fk_class_fkey; Type: FK CONSTRAINT; Schema: public; Owner: dev
+--
+
+ALTER TABLE ONLY schedule
+    ADD CONSTRAINT schedule_fk_class_fkey FOREIGN KEY (fk_class) REFERENCES class(id);
 
 
 --
