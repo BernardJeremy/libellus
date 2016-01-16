@@ -2,54 +2,48 @@ var rendering = require('../util/rendering');
 var Terms = require("../entities/terms");
 var Subjects = require("../entities/subjects");
 var Classes = require("../entities/classes");
+var ClassesCollection = require("../collections/classes");
 var Teachers = require("../entities/teachers");
+var Schedules = require("../entities/schedules");
 
 exports.home = function(req, res) {
-  res.send({
-    'data': {
-      'test': {
-        'testsub': {
-          'str': 'testsub hello world'
-        },
-        'testsub2': 42
-      },
-      'test2': 'hello world'
-    }
-  });
+  res.send("Welcome on Libellus !");
 };
 
 exports.getClasses = function(req, res) {
   var subjectId = req.params.subjectId;
-  new Classes().where("fk_subject", subjectId).fetch()
+  new ClassesCollection()
+  .fetch({withRelated: ['schedules', 'teacher']})
   .then(function(classes) {
-    var json = classes.toJSON();
+    var completeJson = classes.toJSON();
 
-    var teacherId = json.fk_teacher;
-    var time = json.time.split('-');
-    json.capacity = {};
-    json.capacity.wait_list = json.wait_list;
-    json.capacity.enrollment = json.enrollment;
-    json.capacity.total_capacity = json.total_capacity;
-    json.time = {};
-    json.time.day = json.days;
-    json.time.start = time[0];
-    json.time.end = time[1];
+    for (var i in completeJson) {
+      var json = completeJson[i];
+      var teacherId = json.fk_teacher;
+      json.capacity = {};
+      json.capacity.wait_list = json.wait_list;
+      json.capacity.enrollment = json.enrollment;
+      json.capacity.total_capacity = json.total_capacity;
+      json.time = json.schedules;
 
-    delete json.fk_teacher;
-    delete json.fk_subject;
-    delete json.total_capacity;
-    delete json.enrollment;
-    delete json.wait_list;
-    delete json.days;
+      for (var index in json.time) {
+        var time = json.time[index];
+        delete time.id;
+        delete time.fk_class;
+        time.end = time.finish;
+        delete time.finish;
+      }
 
+      delete json.fk_teacher;
+      delete json.teacher.id;
+      delete json.fk_subject;
+      delete json.total_capacity;
+      delete json.enrollment;
+      delete json.wait_list;
+      delete json.schedules;
+  }
 
-    new Teachers().where("id", teacherId).fetch().then(function(teachers){
-      json.teacher = teachers.toJSON();
-      res.send(json);
-    }).catch(function(error) {
-      console.log(error);
-      res.send('An error occured');
-    });
+    res.send(completeJson);
 
   }).catch(function(error) {
     console.log(error);

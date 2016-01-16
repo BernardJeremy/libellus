@@ -1,6 +1,13 @@
 var Bookshelf = require("../database/bookshelf");
-var Subject = require ("./subjects");
+var Schedule = require ("./schedules");
+var Teacher = require ("./teachers");
 
 module.exports = Bookshelf.Model.extend({
-  tableName: 'class'
+  tableName: 'class',
+  schedules : function() {
+    return this.hasMany(Schedule, "fk_class");
+  },
+  teacher: function() {
+    return this.belongsTo(Teacher, "fk_teacher");
+  }
 });
