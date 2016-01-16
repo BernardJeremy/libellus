@@ -8,7 +8,10 @@ import { load as loadSubjects } from 'redux/modules/subjects'
 import { load as loadClasses } from 'redux/modules/classes'
 import { changeScheduleHeight } from 'redux/modules/scheduleStyle'
 import classes from './CalendarFilter.scss'
-import Slider from 'material-ui/lib/slider'
+// import Slider from 'material-ui/lib/slider'
+import Paper from 'material-ui/lib/paper'
+// import classNames from 'classnames'
+import ClassesList from './ClassesList/ClassesList'
 
 const mapStateToProps = (state) => ({
   filters: state.filters,
@@ -53,43 +56,50 @@ export class CalendarFilter extends React.Component {
     const terms = this.props.terms.map((term) =>
       <MenuItem
         value={term.id}
-        key={'term_' + term.id}
+        key={term.id}
         primaryText={term.name} />
     )
     const subjects = this.props.subjects.map((subject) =>
       <MenuItem
         value={subject.id}
-        key={'subject_' + subject.id}
+        key={subject.id}
         primaryText={subject.name} />
     )
 
     return (
       <div className={classes['container']}>
         <div className={classes['row']}>
-          <div className={classes['filter-container']}>
-            <SelectField
-              value={this.props.filters.termId}
-              onChange={this.termChanged}
-              floatingLabelText='Term'
-              fullWidth autoWidth>
-              {terms}
-            </SelectField>
-          </div>
-          <div className={classes['filter-container']}>
-            <SelectField
-              value={this.props.filters.subjectId}
-              onChange={this.subjectChanged}
-              floatingLabelText='Subject'
-              fullWidth autoWidth>
-              {subjects}
-            </SelectField>
-          </div>
+          <Paper className={classes['filters-container']}>
+            <div className={classes['filter-container']}>
+              <SelectField
+                value={this.props.filters.termId}
+                onChange={this.termChanged}
+                floatingLabelText='Term'
+                fullWidth autoWidth>
+                {terms}
+              </SelectField>
+            </div>
+            <div className={classes['filter-container']}>
+              <SelectField
+                value={this.props.filters.subjectId}
+                onChange={this.subjectChanged}
+                floatingLabelText='Subject'
+                fullWidth autoWidth>
+                {subjects}
+              </SelectField>
+            </div>
+          </Paper>
         </div>
         <div className={classes['row']}>
-          <Slider min={20} max={100} value={this.props.rowHeight} className={classes['row-height-selector']} onChange={this.onChangeHeight} description='Row Height' />
+          <Paper className={classes['classes-list']}>
+            <ClassesList />
+          </Paper>
         </div>
       </div>
     )
+  // <Paper className={classes['slider-container']}>
+  //   <Slider min={20} max={100} value={this.props.rowHeight} className={classes['row-height-selector']} onChange={this.onChangeHeight} description='Row Height' />
+  // </Paper>
   }
 }
 
