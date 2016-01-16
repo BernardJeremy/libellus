@@ -1,8 +1,13 @@
 .container {
-  display: flex;
   padding: 10px;
+}
+.row {
+  display: flex;
 }
 .filter-container {
   flex: 1;
   margin: 10px;
+}
+.row-height-selector {
+  flex: 1;
 }

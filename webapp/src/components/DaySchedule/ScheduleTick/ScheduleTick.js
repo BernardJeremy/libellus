@@ -41,7 +41,6 @@ export class DaySchedule extends React.Component {
         zIndex: 10 + this.props.hour
       }
       if (this.hasPendingClasses()) {
-        console.log('has pending classes')
         style.marginLeft = 5
       }
       return (
