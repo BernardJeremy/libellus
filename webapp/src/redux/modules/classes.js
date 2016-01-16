@@ -5,6 +5,8 @@ export const CLASSES_LOAD = 'CLASSES_LOAD'
 export const CLASSES_LOADED = 'CLASSES_LOADED'
 export const CLASSES_LOAD_FAIL = 'CLASSES_LOAD_FAIL'
 export const CLASSES_SELECT_ID = 'CLASSES_SELECT_ID'
+export const CLASSES_ADD_TO_LIST = 'CLASSES_ADD_TO_LIST'
+export const CLASSES_REMOVE_FROM_LIST = 'CLASSES_REMOVE_FROM_LIST'
 
 export const load = createAction(CLASSES_LOAD, ({subjectId, termId}) => {
   return {
@@ -15,13 +17,11 @@ export const load = createAction(CLASSES_LOAD, ({subjectId, termId}) => {
 
 export const selectClassId = createAction(CLASSES_SELECT_ID, (id) => id)
 
-export const actions = {
-  load,
-  selectClassId
-}
+export const addToList = createAction(CLASSES_ADD_TO_LIST, (id) => id)
+export const removeFromList = createAction(CLASSES_REMOVE_FROM_LIST, (id) => id)
 
 export default handleActions({
-  [CLASSES_LOAD]: (state) => { return {...state, loading: true, failure: false, content: []} },
+  [CLASSES_LOAD]: (state) => { return {...state, loading: true, failure: false, content: [], raw: []} },
   [CLASSES_LOADED]: (state, { result }) => {
     const classes = _.chain(result).map((currentClass) => {
       return _.map(currentClass.time, (time) => {
@@ -34,12 +34,18 @@ export default handleActions({
         return classTime
       })
     }).flatten().value()
-    return {...state, loading: false, failure: false, content: classes}
+    return {...state, loading: false, failure: false, content: classes, raw: result}
   },
   [CLASSES_LOAD_FAIL]: (state, { payload }) => {
-    return {...state, loading: false, failure: true, content: []}
+    return {...state, loading: false, failure: true, content: [], raw: []}
   },
   [CLASSES_SELECT_ID]: (state, {payload}) => {
     return {...state, selectedClassId: payload}
+  },
+  [CLASSES_ADD_TO_LIST]: (state, {payload}) => {
+    return {...state, selectedClassId: payload, registeredClasses: _.union(state.registeredClasses, [payload])}
+  },
+  [CLASSES_REMOVE_FROM_LIST]: (state, {payload}) => {
+    return {...state, selectedClassId: payload, registeredClasses: _.without(state.registeredClasses, payload)}
   }
-}, {loading: false, failure: false, content: [], selectedClassId: null})
+}, {loading: false, failure: false, content: [], raw: [], selectedClassId: null, registeredClasses: []})

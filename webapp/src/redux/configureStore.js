@@ -6,6 +6,7 @@ import {
   compose,
   createStore
 } from 'redux'
+import persistState from 'redux-localstorage'
 
 export default function configureStore (initialState) {
   let createStoreWithMiddleware
@@ -13,13 +14,14 @@ export default function configureStore (initialState) {
 
   if (__DEBUG__) {
     createStoreWithMiddleware = compose(
+      persistState(null, {key: 'libellus'}),
       middleware,
       window.devToolsExtension
         ? window.devToolsExtension()
         : require('containers/DevTools').default.instrument()
     )
   } else {
-    createStoreWithMiddleware = compose(middleware)
+    createStoreWithMiddleware = compose(persistState(null, {key: 'libellus'}), middleware)
   }
 
   const store = createStoreWithMiddleware(createStore)(

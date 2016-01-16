@@ -8,20 +8,25 @@ import randomcolor from 'randomcolor'
 import classnames from 'classnames'
 import Popover from 'material-ui/lib/popover/popover'
 import Divider from 'material-ui/lib/divider'
-import { selectClassId } from 'redux/modules/classes'
+import { selectClassId, addToList as addCourseToList, removeFromList as removeCourseFromList } from 'redux/modules/classes'
 import _ from 'lodash'
 import FontAwesome from 'react-fontawesome'
+import RaisedButton from 'material-ui/lib/raised-button'
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = (state, props) => ({
   hourHeight: state.scheduleStyle.height,
-  selectedClassId: state.classes.selectedClassId
+  selectedClassId: state.classes.selectedClassId,
+  classInList: _.contains(state.classes.registeredClasses, props.data.id)
 })
 export class ClassSchedule extends React.Component {
   static propTypes = {
     data: PropTypes.object.isRequired,
     hourHeight: PropTypes.number.isRequired,
     selectedClassId: PropTypes.string,
-    selectClassId: PropTypes.func.isRequired
+    selectClassId: PropTypes.func.isRequired,
+    addCourseToList: PropTypes.func.isRequired,
+    removeCourseFromList: PropTypes.func.isRequired,
+    classInList: PropTypes.bool.isRequired
   };
 
   constructor () {
@@ -37,6 +42,14 @@ export class ClassSchedule extends React.Component {
   popoverClosed = () => {
     this.setState({popoverOpened: false})
     this.props.selectClassId(null)
+  };
+
+  onToggleCourse = () => {
+    if (this.props.classInList) {
+      this.props.removeCourseFromList(this.props.data.id)
+    } else {
+      this.props.addCourseToList(this.props.data.id)
+    }
   };
 
   render () {
@@ -77,10 +90,12 @@ export class ClassSchedule extends React.Component {
             <p className={classes['enrolment']}>Enrolment: {this.props.data.capacity.enrollment}</p>
             <p className={classes['seats-left']}>Seats Left: {this.props.data.capacity.total_capacity - this.props.data.capacity.enrollment}</p>
           </div>
+          <Divider />
+          <RaisedButton style={{marginTop: 5}} label={this.props.classInList ? 'Remove from list' : 'Add to list'} primary onTouchTap={this.onToggleCourse} fullWidth/>
         </Popover>
       </div>
     )
   }
 }
 
-export default connect(mapStateToProps, {selectClassId})(ClassSchedule)
+export default connect(mapStateToProps, {selectClassId, addCourseToList, removeCourseFromList})(ClassSchedule)

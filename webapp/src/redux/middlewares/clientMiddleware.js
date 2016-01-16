@@ -49,6 +49,11 @@ const mocks = {
           'end': '13:30'
         },
         {
+          'day': 'Tue',
+          'start': '9:00',
+          'end': '13:30'
+        },
+        {
           'day': 'Wed',
           'start': '11:30',
           'end': '13:30'
