@@ -51,6 +51,7 @@
   "license": "MIT",
   "dependencies": {
     "better-npm-run": "0.0.5",
+    "classnames": "2.2.3",
     "debug": "^2.2.0",
     "dotenv": "^1.2.0",
     "history": "^1.17.0",
@@ -62,6 +63,7 @@
     "randomcolor": "0.4.3",
     "react": "^0.14.0",
     "react-dom": "^0.14.0",
+    "react-fontawesome": "0.3.3",
     "react-redux": "^4.0.0",
     "react-router": "^1.0.1",
     "react-tap-event-plugin": "0.2.1",

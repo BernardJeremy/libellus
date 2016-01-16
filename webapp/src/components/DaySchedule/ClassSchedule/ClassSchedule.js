@@ -5,8 +5,12 @@ import classes from './ClassSchedule.scss'
 import { hashCode } from 'utils'
 import Paper from 'material-ui/lib/paper'
 import randomcolor from 'randomcolor'
+import classnames from 'classnames'
 import Popover from 'material-ui/lib/popover/popover'
+import Divider from 'material-ui/lib/divider'
 import { selectClassId } from 'redux/modules/classes'
+import _ from 'lodash'
+import FontAwesome from 'react-fontawesome'
 
 const mapStateToProps = (state) => ({
   hourHeight: state.scheduleStyle.height,
@@ -32,6 +36,7 @@ export class ClassSchedule extends React.Component {
 
   popoverClosed = () => {
     this.setState({popoverOpened: false})
+    this.props.selectClassId(null)
   };
 
   render () {
@@ -44,11 +49,13 @@ export class ClassSchedule extends React.Component {
       containerStyle.top = this.props.hourHeight / 2
     }
 
+    const stars = _.times(Number(this.props.data.teacher.rate), (i) => <FontAwesome name='star' key={i} />)
+
     return (
       <div>
         <Paper
           zDepth={this.state.popoverOpened ? 3 : 1}
-          className={classes['container']}
+          className={classnames(classes['container'], {[classes['non-selected']]: this.props.selectedClassId && this.props.selectedClassId !== this.props.data.id})}
           style={containerStyle}
           onClick={this.onClick}
           ref='container'>
@@ -59,8 +66,17 @@ export class ClassSchedule extends React.Component {
           anchorEl={this.state.anchor}
           onRequestClose={this.popoverClosed}
           anchorOrigin={{'horizontal': 'right', 'vertical': 'top'}}
-          targetOrigin={{'horizontal': 'left', 'vertical': 'top'}}>
-          <p>coucou</p>
+          targetOrigin={{'horizontal': 'left', 'vertical': 'top'}}
+          className={classes['popover']}>
+          <p className={classes['title']}>{this.props.data.code} {this.props.data.name}</p>
+          <p className={classes['description']}>{this.props.data.description}</p>
+          <p className={classes['room']}>{this.props.data.room} - {this.props.data.teacher.name} <a target='_blank' href={this.props.data.teacher.rate_link}>{stars}</a></p>
+          <Divider />
+          <p className={classes['capacity']}>Capacity: {this.props.data.capacity.total_capacity}</p>
+          <div className={classes['capacity-details']}>
+            <p className={classes['enrolment']}>Enrolment: {this.props.data.capacity.enrollment}</p>
+            <p className={classes['seats-left']}>Seats Left: {this.props.data.capacity.total_capacity - this.props.data.capacity.enrollment}</p>
+          </div>
         </Popover>
       </div>
     )
