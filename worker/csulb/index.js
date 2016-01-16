@@ -2,7 +2,7 @@ var webdriverio = require('webdriverio');
 var options = {
     desiredCapabilities: {
         browserName: 'firefox',
-        firefox_binary: '/opt/homebrew-cask/Caskroom/firefox/42.0/Firefox.app/Contents/MacOS/firefox-bin'
+        firefox_binary: '/Applications/Firefox.app/Contents/MacOS/firefox-bin'
     }
 };
 
@@ -18,7 +18,7 @@ client.init()
     .click('#DERIVED_SSS_SCR_SSS_LINK_ANCHOR1')
     .waitForExist('#CLASS_SRCH_WRK2_STRM$45$', 5000)
     .selectByValue('#CLASS_SRCH_WRK2_STRM$45$', '2162')
-    .pause(5000)
+    .pause(1000)
     .selectByValue('#SSR_CLSRCH_WRK_SUBJECT_SRCH$0', 'CECS')
     .click('#CLASS_SRCH_WRK2_SSR_PB_CLASS_SRCH')
     .waitForExist('##ICSave', 5000)
@@ -31,20 +31,21 @@ client.init()
       document.getElementsByTagName('head')[0].appendChild(scriptElt);
     })
     .execute(function() {
-      return $('.PAGROUPBOXLABELLEVEL1').toArray().map(function(el) {return $(el).text()})
+        return $('#ACE_\\$ICField98\\$0').children('tbody').children('tr').toArray().map(function(el) {
+            return {class_name: $(el).find('[id*="win0divSSR_CLSRSLT_WRK_GROUPBOX2GP"]').text(),
+                    slots:
+                        $(el).find('.PSLEVEL1GRIDNBONBO').toArray().map(function(el) {
+                            var $el = $(el)
+                            return {
+                                date: $el.find('[id*="MTG_DAYTIME"]').text(),
+                                room: $el.find('[id*="MTG_ROOM"]').text(),
+                                instructor: $el.find('[id*="MTG_INSTR"]').text(),
+                                section: $el.find('[id*="MTG_CLASSNAME"]').text()
+                            };
+                        })
+                    };
+        })
     }).then(function(result) {
-      console.log('Course titles:', result.value);
-    }).execute(function() {
-      return $('.PSLEVEL1GRIDNBONBO').toArray().map(function(el) {
-        var $el = $(el)
-        return {
-          date: $el.find('[id*="MTG_DAYTIME"]').text(),
-          room: $el.find('[id*="MTG_ROOM"]').text(),
-          instructor: $el.find('[id*="MTG_INSTR"]').text(),
-          section: $el.find('[id*="MTG_CLASSNAME"]').text()
-        }
-      })
-    }).then(function(result) {
-      console.log('Sections:', result.value);
-    })
+    });
+
     // .end();
