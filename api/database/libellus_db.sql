@@ -155,7 +155,8 @@ CREATE TABLE teacher (
     id integer NOT NULL,
     name character varying(100),
     rate numeric,
-    rate_link character varying(100)
+    rate_link character varying(100),
+    refresh timestamp
 );
 
 
