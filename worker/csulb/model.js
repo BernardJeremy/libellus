@@ -14,6 +14,10 @@ var Class = sequelize.define('class', {
     type: Sequelize.STRING,
     allowNull: false
   },
+  slot: {
+    type: Sequelize.STRING,
+    allowNull: false
+  },
   room: {
     type: Sequelize.STRING
   },
@@ -24,7 +28,13 @@ var Class = sequelize.define('class', {
     type: Sequelize.JSON
   },
   description: {
-    type: Sequelize.STRING
+    type: Sequelize.TEXT
+  },
+  enrolment: {
+    type: Sequelize.INTEGER
+  },
+  capacity: {
+    type: Sequelize.INTEGER
   }
 });
 
@@ -55,7 +65,7 @@ var Teacher = sequelize.define('teacher', {
 Class.belongsTo(Subject)
 Class.belongsTo(Teacher)
 
-var initPromise = sequelize.sync({force: true})
+var initPromise = sequelize.sync()
 
 var smDaytoFull = {
   'Mo': 'Mon',
@@ -91,6 +101,7 @@ function generateDBSectionObj(subject, teachers, currentClass) {
     return {
       name: className,
       code: classCode,
+      slot: slot.slot.split('\n')[0],
       room: slot.room,
       time: dateStringToDate(slot.date),
       section: slot.section.split('\n')[0],
@@ -98,14 +109,22 @@ function generateDBSectionObj(subject, teachers, currentClass) {
       teacherId: teachers[slot.instructor]
     }
   })
+  return _.map(slots, (slot) => {
+    return Class.update(slot, {
+      where: {slot: slot.slot, subjectId: slot.subjectId},
+    }).then((result) => {
+      if (result[0] === 0) {
+        return Class.create(slot)
+      }
+      return result
+    })
+  })
   return slots
 }
 
 function findOrCreateTeachers(rawClasses) {
   return new Promise(function(resolve, reject) {
-    var teachersName = _.chain(rawClasses).map(function(currentClass) {
-      return currentClass.slots.map((slot) => slot.instructor)
-    }).flatten().uniq().value();
+    var teachersName = _.chain(rawClasses).map('slots').map('instructor').flatten().uniq().value();
     var teachersPromises = _.map(teachersName, (name) => Teacher.findOrCreate({where: {name}}))
     Promise.all(teachersPromises).then((teachers) => {
       resolve(_.chain(teachers).map((teacher) => [teacher[0].dataValues.name, teacher[0].dataValues.id]).fromPairs().value())
@@ -130,14 +149,46 @@ exports.saveClasses = function(subjectInfo, classes) {
     var subject = results[0][0]
     var teachers = results[1]
     console.log('Found %d teachers', _.keys(teachers).length)
-    var slots = _.chain(rawClasses).map(function(currentClass) {
+    var slotsPromises = _.chain(rawClasses).map(function(currentClass) {
       return generateDBSectionObj(subject, teachers, currentClass)
     }).compact().flatten().value()
-    return Class.bulkCreate(slots)
+    return Promise.all(slotsPromises)
   })
   .then(function(objs) {
     console.log('Saved %s objects in db', objs.length)
   }).catch(function(err) {
     console.error('Error', err.stack)
+  })
+}
+
+exports.getSlotsLastUpdateDate = function(subjectInfos) {
+  initPromise.then(() => Subject.findOrCreate({
+    where: {code: subjectInfo.code},
+    defaults: {
+      code: subjectInfo.code,
+      name: subjectInfo.name
+    }
+  }))
+  .then((results) => Class.findAll({
+      where: {
+        subjectId: results[1].dataValue.id
+      },
+      attributes: ['slot', 'lastUpdated']
+    })
+  ).then((results) => results[1])
+}
+
+exports.saveSlotInfo = function(subjectInfos, slotInfo) {
+  initPromise.then(() =>
+    Class.update(
+      slotInfo,
+      {
+        where: {slot: slotInfo.slot},
+        returning: true
+      }
+    )
+  )
+  .then((results) => {
+    console.log('Updated class:', results[1][0].dataValues.id)
   })
 }

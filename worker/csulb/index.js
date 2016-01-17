@@ -1,93 +1,87 @@
 var webdriverio = require('webdriverio');
 var options = {
-    desiredCapabilities: {
-        browserName: 'firefox',
-        // firefox_binary: '/Applications/Firefox.app/Contents/MacOS/firefox-bin'
-        firefox_binary: '/opt/homebrew-cask/Caskroom/firefox/42.0/Firefox.app/Contents/MacOS/firefox-bin'
-    }
+  desiredCapabilities: {
+    browserName: 'firefox',
+    // firefox_binary: '/Applications/Firefox.app/Contents/MacOS/firefox-bin'
+    firefox_binary: '/opt/homebrew-cask/Caskroom/firefox/42.0/Firefox.app/Contents/MacOS/firefox-bin'
+  }
 };
 
 var model = require('./model.js')
 
 var client = webdriverio.remote(options)
 client.init()
-    .url('https://my.cms.csulb.edu')
-    .waitForExist('#userid', 5000)
-    .setValue('#userid', process.env.CSULB_USERNAME)
-    .setValue('#pwd', process.env.CSULB_PASSWORD)
-    .submitForm('#login')
-    .waitForExist('#ptnav2tree', 5000)
-    .url('https://cmsweb.cms.csulb.edu/psc/HLBPRD/EMPLOYEE/SA/c/SA_LEARNER_SERVICES.SSS_STUDENT_CENTER.GBL?ICType=Panel&Menu=SA_LEARNER_SERVICES&Market=GBL&PanelGroupName=SSS_STUDENT_CENTER&FolderPath=PORTAL_ROOT_OBJECT.LB_STUDENT_CENTER&IsFolder=false&IgnoreParamTempl=FolderPath%2cIsFolder&PortalActualURL=https%3a%2f%2fcmsweb.cms.csulb.edu%2fpsc%2fHLBPRD%2fEMPLOYEE%2fSA%2fc%2fSA_LEARNER_SERVICES.SSS_STUDENT_CENTER.GBL%3fICType%3dPanel%26Menu%3dSA_LEARNER_SERVICES%26Market%3dGBL%26PanelGroupName%3dSSS_STUDENT_CENTER&PortalContentURL=https%3a%2f%2fcmsweb.cms.csulb.edu%2fpsc%2fHLBPRD%2fEMPLOYEE%2fSA%2fc%2fSA_LEARNER_SERVICES.SSS_STUDENT_CENTER.GBL%3fICType%3dPanel%26Menu%3dSA_LEARNER_SERVICES%26Market%3dGBL%26PanelGroupName%3dSSS_STUDENT_CENTER&PortalContentProvider=SA&PortalCRefLabel=Student%20Center&PortalRegistryName=EMPLOYEE&PortalServletURI=https%3a%2f%2fmy.cms.csulb.edu%2fpsp%2fpaprd%2f&PortalURI=https%3a%2f%2fmy.cms.csulb.edu%2fpsc%2fpaprd%2f&PortalHostNode=EMPL&NoCrumbs=yes&PortalKeyStruct=yes')
-    .click('#DERIVED_SSS_SCR_SSS_LINK_ANCHOR1')
-    .waitForExist('#CLASS_SRCH_WRK2_STRM$45$', 5000)
-    .selectByValue('#CLASS_SRCH_WRK2_STRM$45$', '2162')
-    .pause(1000)
-    .selectByValue('#SSR_CLSRCH_WRK_SUBJECT_SRCH$0', 'CECS')
-    .click('#CLASS_SRCH_WRK2_SSR_PB_CLASS_SRCH')
-    .waitForExist('##ICSave', 6000)
-    .click('##ICSave')
-    .waitForExist('#DERIVED_REGFRM1_SS_TRANSACT_TITLE', 10000)
-    .execute(function() {
-      var scriptElt = document.createElement('script');
-      scriptElt.type = 'text/javascript';
-      scriptElt.src = 'https://code.jquery.com/jquery-2.2.0.min.js';
-      document.getElementsByTagName('head')[0].appendChild(scriptElt);
-    })
-    .execute(function() {
-      return $('#ACE_\\$ICField98\\$0').children('tbody').children('tr').toArray().map(function(el) {
+.url('https://my.cms.csulb.edu')
+.waitForExist('#userid', 5000)
+.setValue('#userid', process.env.CSULB_USERNAME)
+.setValue('#pwd', process.env.CSULB_PASSWORD)
+.submitForm('#login')
+.waitForExist('#ptnav2tree', 5000)
+.url('https://cmsweb.cms.csulb.edu/psc/HLBPRD/EMPLOYEE/SA/c/SA_LEARNER_SERVICES.SSS_STUDENT_CENTER.GBL?ICType=Panel&Menu=SA_LEARNER_SERVICES&Market=GBL&PanelGroupName=SSS_STUDENT_CENTER&FolderPath=PORTAL_ROOT_OBJECT.LB_STUDENT_CENTER&IsFolder=false&IgnoreParamTempl=FolderPath%2cIsFolder&PortalActualURL=https%3a%2f%2fcmsweb.cms.csulb.edu%2fpsc%2fHLBPRD%2fEMPLOYEE%2fSA%2fc%2fSA_LEARNER_SERVICES.SSS_STUDENT_CENTER.GBL%3fICType%3dPanel%26Menu%3dSA_LEARNER_SERVICES%26Market%3dGBL%26PanelGroupName%3dSSS_STUDENT_CENTER&PortalContentURL=https%3a%2f%2fcmsweb.cms.csulb.edu%2fpsc%2fHLBPRD%2fEMPLOYEE%2fSA%2fc%2fSA_LEARNER_SERVICES.SSS_STUDENT_CENTER.GBL%3fICType%3dPanel%26Menu%3dSA_LEARNER_SERVICES%26Market%3dGBL%26PanelGroupName%3dSSS_STUDENT_CENTER&PortalContentProvider=SA&PortalCRefLabel=Student%20Center&PortalRegistryName=EMPLOYEE&PortalServletURI=https%3a%2f%2fmy.cms.csulb.edu%2fpsp%2fpaprd%2f&PortalURI=https%3a%2f%2fmy.cms.csulb.edu%2fpsc%2fpaprd%2f&PortalHostNode=EMPL&NoCrumbs=yes&PortalKeyStruct=yes')
+.click('#DERIVED_SSS_SCR_SSS_LINK_ANCHOR1')
+.waitForExist('#CLASS_SRCH_WRK2_STRM$45$', 5000)
+.selectByValue('#CLASS_SRCH_WRK2_STRM$45$', '2162')
+.pause(1000)
+.selectByValue('#SSR_CLSRCH_WRK_SUBJECT_SRCH$0', 'CECS')
+.click('#CLASS_SRCH_WRK2_SSR_PB_CLASS_SRCH')
+.waitForExist('##ICSave', 6000)
+.click('##ICSave')
+.waitForExist('#DERIVED_REGFRM1_SS_TRANSACT_TITLE', 10000)
+.execute(function() {
+  var scriptElt = document.createElement('script');
+  scriptElt.type = 'text/javascript';
+  scriptElt.src = 'https://code.jquery.com/jquery-2.2.0.min.js';
+  document.getElementsByTagName('head')[0].appendChild(scriptElt);
+})
+.execute(function() {
+  return $('#ACE_\\$ICField98\\$0').children('tbody').children('tr').toArray().map(function(el) {
+    return {
+      class_name: $(el).find('[id*="win0divSSR_CLSRSLT_WRK_GROUPBOX2GP"]').text(),
+      slots: $(el).find('.PSLEVEL1GRIDNBONBO').toArray().map(function(el) {
+        var $el = $(el)
         return {
-          class_name: $(el).find('[id*="win0divSSR_CLSRSLT_WRK_GROUPBOX2GP"]').text(),
-          slots: $(el).find('.PSLEVEL1GRIDNBONBO').toArray().map(function(el) {
-            var $el = $(el)
-            return {
-              date: $el.find('[id*="MTG_DAYTIME"]').text().split('\n')[0],
-              room: $el.find('[id*="MTG_ROOM"]').text().split('\n')[0],
-              instructor: $el.find('[id*="MTG_INSTR"]').text().split('\n')[0],
-              section: $el.find('[id*="MTG_CLASSNAME"]').text()
-            };
-          })
+          date: $el.find('[id*="MTG_DAYTIME"]').text().split('\n')[0],
+          room: $el.find('[id*="MTG_ROOM"]').text().split('\n')[0],
+          instructor: $el.find('[id*="MTG_INSTR"]').text().split('\n')[0],
+          section: $el.find('[id*="MTG_CLASSNAME"]').text(),
+          slot: $el.find('[id*="MTG_CLASS_NBR"]').text()
         };
       })
-    }).then(function(result) {
+    };
+  })
+}).then(function(result) {
+  model.saveClasses({code: 'CECS', name: 'Computer Engr & Computer Sci'}, result.value)
 
-        model.saveClasses({code: 'CECS', name: 'Computer Engr & Computer Sci'}, result.value)
+  class_array = result.value;
+  var currentClient = client;
 
-        class_array = result.value;
-        var currentClient = client;
+  var count = 0;
 
-        var count = 0;
+  for (var i = 0; i < class_array.length; i++) {
+    for (var j = 0; j < class_array[i].slots.length; j++) {
+      slot = class_array[i].slots[j];
 
-        for (var i = 0; i < class_array.length; i++) {
-            for (var j = 0; j < class_array[i].slots.length; j++) {
-                slot = class_array[i].slots[j];
+      var button = '#MTG_CLASSNAME$' + count.toString();
+      currentClient = currentClient.waitForExist(button, 5000)
+      .click(button)
+      .waitForExist('#DERIVED_CLSRCH_DESCRLONG', 5000)
+      .execute(function() {
+        return {
+          slot: $('#SSR_CLS_DTL_WRK_CLASS_NBR').text(),
+          description:  $('#DERIVED_CLSRCH_DESCRLONG').text(),
+          enrollment: Number($('#SSR_CLS_DTL_WRK_ENRL_TOT').text()),
+          capacity: Number($('#SSR_CLS_DTL_WRK_ENRL_CAP').text())
+        };
+      }).then(function(result) {
+        model.saveSlotInfo({code: 'CECS', name: 'Computer Engr & Computer Sci'}, result.value)
+      })
+      .waitForExist('#CLASS_SRCH_WRK2_SSR_PB_BACK', 5000)
+      .click('#CLASS_SRCH_WRK2_SSR_PB_BACK');
+      count++;
+    }
+  }
+}).catch(function(error) {
+  console.log(error);
+});
 
-                var button = '#MTG_CLASSNAME$' + count.toString();
-                console.log('click on ' + button);
-
-                currentClient = currentClient.waitForExist(button, 5000)
-                .click(button)
-                .waitForExist('#DERIVED_CLSRCH_DESCRLONG', 5000)
-                .execute(function() {
-                    return {
-                        slot: $('#SSR_CLS_DTL_WRK_CLASS_NBR').text(),
-                        desc:  $('#DERIVED_CLSRCH_DESCRLONG').text(),
-                        enrollment: $('#SSR_CLS_DTL_WRK_ENRL_TOT').text(),
-                        capacity: $('#SSR_CLS_DTL_WRK_ENRL_CAP').text()
-                    };
-                }).then(function(result) {
-                    // class_array[i] if you need to access the class
-                    console.log('----->' + result.value.slot);
-                    console.log('----->' + result.value.desc);
-                    console.log('----->' + result.value.enrollment);
-                    console.log('----->' + result.value.capacity);
-                })
-                .waitForExist('#CLASS_SRCH_WRK2_SSR_PB_BACK', 5000)
-                .click('#CLASS_SRCH_WRK2_SSR_PB_BACK');
-                count++;
-            }
-        }
-    }).catch(function(error) {
-        console.log(error);
-    });
-
-    // .end();
+// .end();
