@@ -6,7 +6,7 @@ import re
 import psycopg2
 
 rate_link = None
-refresh_time = 3
+refresh_time = 60 * 60 * 24 # refresh every 24 hours
 
 try:
     conn = psycopg2.connect("dbname=libellus user=sevauk password=dev1 host=localhost")
@@ -45,9 +45,7 @@ def look_for_prof(name):
             'schoolID':'',
             'query':name}
 
-    #quickfix
-    name = name.replace(' ', '+')
-    r = requests.get('http://www.ratemyprofessors.com/search.jsp?queryoption=HEADER&queryBy=teacherName&schoolName=&schoolID=&query=' + name)
+    r = requests.get('http://www.ratemyprofessors.com/search.jsp', params=query_params)
 
     if r.status_code != 200:
         exit(1)
@@ -63,20 +61,26 @@ def add_teacher(name):
     cur.execute("INSERT INTO teacher VALUES(DEFAULT, '{}', {}, '{}', NOW())".format(name, rating, rate_link))
     conn.commit()
 
+def update_teacher(name):
+
+    rating = extract_rating(name)
+
+    cur = conn.cursor()
+    cur.execute("UPDATE teacher SET rate = {}, refresh = NOW() WHERE name = '{}'".format(rating, name))
+    conn.commit()
+    print('libellus worker: {} has been updated'.format(name))
+
 def check_db():
 
     cur = conn.cursor()
-    #cur.execute("SELECT * FROM teacher WHERE refresh < NOW() - INTERVAL '{} SECONDS'".format(refresh_time))
-    cur.execute("SELECT * FROM teacher")
+    cur.execute("SELECT * FROM teacher WHERE refresh < NOW() - INTERVAL '{} SECONDS'".format(refresh_time))
 
     rows = cur.fetchall()
     cur.close()
     if rows != []:
-        print('must update')
-        print(rows)
+        for r in rows:
+            update_teacher(r[1])
     else:
-        print('no record')
+        print('libellus worker: nothing to update')
 
-add_teacher('Elleni Wolde')
 check_db()
-#print(extract_rating(prof_name))
