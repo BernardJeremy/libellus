@@ -1,7 +1,10 @@
 module.exports = {
+  database : 'libellus',
+  username : 'dev',
+  password : 'dev1',
+  options  : {
     host     : 'localhost',
-    user     : 'dev',
-    password : 'dev1',
-    database : 'libellus',
-    charset  : 'utf8'
+    dialect  : 'postgres',
+    logging  : false
+  }
 };

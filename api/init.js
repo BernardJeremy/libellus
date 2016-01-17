@@ -8,8 +8,7 @@ try {
     dbConfig = require('./config/db.conf.js');
   } catch(e) {
     console.log('Startup failed. No db config file found.');
-    module.exports = false;
-    return ;
+    dbConfig = false;
   }
 }
 

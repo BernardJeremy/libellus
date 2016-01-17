@@ -1,12 +1,7 @@
 var rendering = require('../util/rendering');
 var url = require('url');
 
-var Terms = require("../entities/terms");
-var Subjects = require("../entities/subjects");
-var Classes = require("../entities/classes");
-var ClassesCollection = require("../collections/classes");
-var Teachers = require("../entities/teachers");
-var Schedules = require("../entities/schedules");
+var Model = require("../model.js");
 
 exports.home = function(req, res) {
   res.send("Welcome on Libellus !");
@@ -16,11 +11,11 @@ exports.getClasses = function(req, res) {
   var subjectId = req.params.subjectId;
   var termId = url.parse(req.url, true).query.term;
 
-  new ClassesCollection()
-  .fetch({withRelated: ['schedules', 'teacher']})
-  .then(function(classes) {
-    var completeJson = classes.toJSON();
-
+  Model.Class.findAll().then(function(classes){
+    
+    console.log(classes);
+    res.send(classes);
+    return;
     for (var i in completeJson) {
       var json = completeJson[i];
 
@@ -36,15 +31,7 @@ exports.getClasses = function(req, res) {
       json.capacity.wait_list = json.wait_list;
       json.capacity.enrollment = json.enrollment;
       json.capacity.total_capacity = json.total_capacity;
-      json.time = json.schedules;
-
-      for (var index in json.time) {
-        var time = json.time[index];
-        delete time.id;
-        delete time.fk_class;
-        time.end = time.finish;
-        delete time.finish;
-      }
+      json.time = json.time;
 
       delete json.fk_teacher;
       delete json.fk_term;
@@ -54,7 +41,7 @@ exports.getClasses = function(req, res) {
       delete json.enrollment;
       delete json.wait_list;
       delete json.schedules;
-  }
+    }
 
     res.send(completeJson);
 
@@ -65,21 +52,21 @@ exports.getClasses = function(req, res) {
 };
 
 exports.getTerms = function(req, res) {
-  new Terms().fetchAll()
+  /*  new Terms().fetchAll()
   .then(function(terms) {
-    res.send(terms.toJSON());
-  }).catch(function(error) {
-    console.log(error);
-    res.send('An error occured');
-  });
+  res.send(terms.toJSON());
+}).catch(function(error) {
+console.log(error);
+res.send('An error occured');
+});*/
 };
 
 exports.getSubjects = function(req, res) {
-  new Subjects().fetchAll()
+  /*new Subjects().fetchAll()
   .then(function(subjects) {
-    res.send(subjects.toJSON());
-  }).catch(function(error) {
-    console.log(error);
-    res.send('An error occured');
-  });
+  res.send(subjects.toJSON());
+}).catch(function(error) {
+console.log(error);
+res.send('An error occured');
+});*/
 };
