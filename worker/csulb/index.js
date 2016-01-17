@@ -2,9 +2,12 @@ var webdriverio = require('webdriverio');
 var options = {
     desiredCapabilities: {
         browserName: 'firefox',
-        firefox_binary: '/Applications/Firefox.app/Contents/MacOS/firefox-bin'
+        // firefox_binary: '/Applications/Firefox.app/Contents/MacOS/firefox-bin
+        firefox_binary: '/opt/homebrew-cask/Caskroom/firefox/42.0/Firefox.app/Contents/MacOS/firefox-bin'
     }
 };
+
+var model = require('./model.js')
 
 var client = webdriverio.remote(options)
 client.init()
@@ -31,21 +34,23 @@ client.init()
       document.getElementsByTagName('head')[0].appendChild(scriptElt);
     })
     .execute(function() {
-        return $('#ACE_\\$ICField98\\$0').children('tbody').children('tr').toArray().map(function(el) {
-            return {class_name: $(el).find('[id*="win0divSSR_CLSRSLT_WRK_GROUPBOX2GP"]').text(),
-                    slots:
-                        $(el).find('.PSLEVEL1GRIDNBONBO').toArray().map(function(el) {
-                            var $el = $(el)
-                            return {
-                                date: $el.find('[id*="MTG_DAYTIME"]').text(),
-                                room: $el.find('[id*="MTG_ROOM"]').text(),
-                                instructor: $el.find('[id*="MTG_INSTR"]').text(),
-                                section: $el.find('[id*="MTG_CLASSNAME"]').text()
-                            };
-                        })
-                    };
-        })
+      return $('#ACE_\\$ICField98\\$0').children('tbody').children('tr').toArray().map(function(el) {
+        return {
+          class_name: $(el).find('[id*="win0divSSR_CLSRSLT_WRK_GROUPBOX2GP"]').text(),
+          slots: $(el).find('.PSLEVEL1GRIDNBONBO').toArray().map(function(el) {
+            var $el = $(el)
+            return {
+              date: $el.find('[id*="MTG_DAYTIME"]').text().split('\n')[0],
+              room: $el.find('[id*="MTG_ROOM"]').text().split('\n')[0],
+              instructor: $el.find('[id*="MTG_INSTR"]').text().split('\n')[0],
+              section: $el.find('[id*="MTG_CLASSNAME"]').text()
+            };
+          })
+        };
+      })
     }).then(function(result) {
+      // require('fs').writeFileSync('test.json', JSON.stringify(result.value))
+      model.saveClasses({code: 'CECS', name: 'Computer Engr & Computer Sci'}, result.value)
     });
 
     // .end();
