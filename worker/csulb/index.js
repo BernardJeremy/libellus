@@ -2,7 +2,7 @@ var webdriverio = require('webdriverio');
 var options = {
     desiredCapabilities: {
         browserName: 'firefox',
-        // firefox_binary: '/Applications/Firefox.app/Contents/MacOS/firefox-bin
+        // firefox_binary: '/Applications/Firefox.app/Contents/MacOS/firefox-bin'
         firefox_binary: '/opt/homebrew-cask/Caskroom/firefox/42.0/Firefox.app/Contents/MacOS/firefox-bin'
     }
 };
@@ -24,7 +24,7 @@ client.init()
     .pause(1000)
     .selectByValue('#SSR_CLSRCH_WRK_SUBJECT_SRCH$0', 'CECS')
     .click('#CLASS_SRCH_WRK2_SSR_PB_CLASS_SRCH')
-    .waitForExist('##ICSave', 5000)
+    .waitForExist('##ICSave', 6000)
     .click('##ICSave')
     .waitForExist('#DERIVED_REGFRM1_SS_TRANSACT_TITLE', 10000)
     .execute(function() {
@@ -49,8 +49,45 @@ client.init()
         };
       })
     }).then(function(result) {
-      // require('fs').writeFileSync('test.json', JSON.stringify(result.value))
-      model.saveClasses({code: 'CECS', name: 'Computer Engr & Computer Sci'}, result.value)
+
+        model.saveClasses({code: 'CECS', name: 'Computer Engr & Computer Sci'}, result.value)
+
+        class_array = result.value;
+        var currentClient = client;
+
+        var count = 0;
+
+        for (var i = 0; i < class_array.length; i++) {
+            for (var j = 0; j < class_array[i].slots.length; j++) {
+                slot = class_array[i].slots[j];
+
+                var button = '#MTG_CLASSNAME$' + count.toString();
+                console.log('click on ' + button);
+
+                currentClient = currentClient.waitForExist(button, 5000)
+                .click(button)
+                .waitForExist('#DERIVED_CLSRCH_DESCRLONG', 5000)
+                .execute(function() {
+                    return {
+                        slot: $('#SSR_CLS_DTL_WRK_CLASS_NBR').text(),
+                        desc:  $('#DERIVED_CLSRCH_DESCRLONG').text(),
+                        enrollment: $('#SSR_CLS_DTL_WRK_ENRL_TOT').text(),
+                        capacity: $('#SSR_CLS_DTL_WRK_ENRL_CAP').text()
+                    };
+                }).then(function(result) {
+                    // class_array[i] if you need to access the class
+                    console.log('----->' + result.value.slot);
+                    console.log('----->' + result.value.desc);
+                    console.log('----->' + result.value.enrollment);
+                    console.log('----->' + result.value.capacity);
+                })
+                .waitForExist('#CLASS_SRCH_WRK2_SSR_PB_BACK', 5000)
+                .click('#CLASS_SRCH_WRK2_SSR_PB_BACK');
+                count++;
+            }
+        }
+    }).catch(function(error) {
+        console.log(error);
     });
 
     // .end();
