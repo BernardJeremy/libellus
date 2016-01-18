@@ -35,6 +35,9 @@ var Class = sequelize.define('class', {
   },
   capacity: {
     type: Sequelize.INTEGER
+  },
+  detailsUpdatedAt: {
+    type: Sequelize.DATE
   }
 });
 
@@ -101,7 +104,7 @@ function generateDBSectionObj(subject, teachers, currentClass) {
     return {
       name: className,
       code: classCode,
-      slot: slot.slot.split('\n')[0],
+      slot: slot.slot,
       room: slot.room,
       time: dateStringToDate(slot.date),
       section: slot.section.split('\n')[0],
@@ -124,7 +127,7 @@ function generateDBSectionObj(subject, teachers, currentClass) {
 
 function findOrCreateTeachers(rawClasses) {
   return new Promise(function(resolve, reject) {
-    var teachersName = _.chain(rawClasses).map('slots').map('instructor').flatten().uniq().value();
+    var teachersName = _.chain(rawClasses).map('slots').flatten().map('instructor').uniq().value();
     var teachersPromises = _.map(teachersName, (name) => Teacher.findOrCreate({where: {name}}))
     Promise.all(teachersPromises).then((teachers) => {
       resolve(_.chain(teachers).map((teacher) => [teacher[0].dataValues.name, teacher[0].dataValues.id]).fromPairs().value())
@@ -161,27 +164,28 @@ exports.saveClasses = function(subjectInfo, classes) {
   })
 }
 
-exports.getSlotsLastUpdateDate = function(subjectInfos) {
-  initPromise.then(() => Subject.findOrCreate({
+exports.getSlotsLastUpdateDate = function(subjectInfo) {
+  return initPromise.then(() => Subject.findOrCreate({
     where: {code: subjectInfo.code},
     defaults: {
       code: subjectInfo.code,
       name: subjectInfo.name
     }
   }))
-  .then((results) => Class.findAll({
+  .then((results) => {
+    return Class.findAll({
       where: {
-        subjectId: results[1].dataValue.id
+        subjectId: results[0].dataValues.id
       },
-      attributes: ['slot', 'lastUpdated']
+      attributes: ['slot', 'detailsUpdatedAt']
     })
-  ).then((results) => results[1])
+  }).then((results) => _.chain(results).map('dataValues').map((slot) => [slot.slot, slot.detailsUpdatedAt]).fromPairs().value())
 }
 
 exports.saveSlotInfo = function(subjectInfos, slotInfo) {
-  initPromise.then(() =>
+  return initPromise.then(() =>
     Class.update(
-      slotInfo,
+      _.assign(slotInfo, {detailsUpdatedAt: new Date()}),
       {
         where: {slot: slotInfo.slot},
         returning: true
@@ -189,6 +193,6 @@ exports.saveSlotInfo = function(subjectInfos, slotInfo) {
     )
   )
   .then((results) => {
-    console.log('Updated class:', results[1][0].dataValues.id)
+    console.log('Updated class: id= %s, slot= %s', results[1][0].dataValues.id, results[1][0].dataValues.slot)
   })
 }

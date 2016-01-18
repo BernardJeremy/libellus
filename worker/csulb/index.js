@@ -7,6 +7,9 @@ var options = {
   }
 };
 
+var config = {
+  slotUpdateInterval: 1000 * 60 * 60 // one hour in millisecond
+}
 var model = require('./model.js')
 
 var client = webdriverio.remote(options)
@@ -44,44 +47,54 @@ client.init()
           room: $el.find('[id*="MTG_ROOM"]').text().split('\n')[0],
           instructor: $el.find('[id*="MTG_INSTR"]').text().split('\n')[0],
           section: $el.find('[id*="MTG_CLASSNAME"]').text(),
-          slot: $el.find('[id*="MTG_CLASS_NBR"]').text()
+          slot: $el.find('[id*="MTG_CLASS_NBR"]').text().split('\n')[0]
         };
       })
     };
   })
 }).then(function(result) {
-  model.saveClasses({code: 'CECS', name: 'Computer Engr & Computer Sci'}, result.value)
+  return Promise.all([
+    model.saveClasses({code: 'CECS', name: 'Computer Engr & Computer Sci'}, result.value),
+    model.getSlotsLastUpdateDate({code: 'CECS', name: 'Computer Engr & Computer Sci'})
+  ]).then((results) => {
+    var slotsUpdateDates = results[1]
 
-  class_array = result.value;
-  var currentClient = client;
+    var class_array = result.value;
+    var currentClient = client;
 
-  var count = 0;
+    var count = -1;
 
-  for (var i = 0; i < class_array.length; i++) {
-    for (var j = 0; j < class_array[i].slots.length; j++) {
-      slot = class_array[i].slots[j];
+    for (var i = 0; i < class_array.length; i++) {
+      for (var j = 0; j < class_array[i].slots.length; j++) {
+        count++;
+        slot = class_array[i].slots[j];
 
-      var button = '#MTG_CLASSNAME$' + count.toString();
-      currentClient = currentClient.waitForExist(button, 5000)
-      .click(button)
-      .waitForExist('#DERIVED_CLSRCH_DESCRLONG', 5000)
-      .execute(function() {
-        return {
-          slot: $('#SSR_CLS_DTL_WRK_CLASS_NBR').text(),
-          description:  $('#DERIVED_CLSRCH_DESCRLONG').text(),
-          enrollment: Number($('#SSR_CLS_DTL_WRK_ENRL_TOT').text()),
-          capacity: Number($('#SSR_CLS_DTL_WRK_ENRL_CAP').text())
-        };
-      }).then(function(result) {
-        model.saveSlotInfo({code: 'CECS', name: 'Computer Engr & Computer Sci'}, result.value)
-      })
-      .waitForExist('#CLASS_SRCH_WRK2_SSR_PB_BACK', 5000)
-      .click('#CLASS_SRCH_WRK2_SSR_PB_BACK');
-      count++;
+        if (slotsUpdateDates[String(slot.slot)] && (new Date()) - slotsUpdateDates[String(slot.slot)] < config.slotUpdateInterval) {
+          continue;
+        }
+
+        var button = '#MTG_CLASSNAME$' + count.toString();
+        currentClient = currentClient.waitForExist(button, 5000)
+        .click(button)
+        .waitForExist('#DERIVED_CLSRCH_DESCRLONG', 5000)
+        .execute(function() {
+          return {
+            slot: $('#SSR_CLS_DTL_WRK_CLASS_NBR').text(),
+            description:  $('#DERIVED_CLSRCH_DESCRLONG').text(),
+            enrollment: Number($('#SSR_CLS_DTL_WRK_ENRL_TOT').text()),
+            capacity: Number($('#SSR_CLS_DTL_WRK_ENRL_CAP').text())
+          };
+        }).then(function(result) {
+          model.saveSlotInfo({code: 'CECS', name: 'Computer Engr & Computer Sci'}, result.value)
+        })
+        .waitForExist('#CLASS_SRCH_WRK2_SSR_PB_BACK', 5000)
+        .click('#CLASS_SRCH_WRK2_SSR_PB_BACK');
+      }
     }
-  }
+  })
+
 }).catch(function(error) {
-  console.log(error);
+  console.log('Got error:', error, error.stack);
 });
 
 // .end();
