@@ -30,7 +30,7 @@ exports.Class = db.define('class', {
   description: {
     type: Sequelize.TEXT
   },
-  enrolment: {
+  enrollment: {
     type: Sequelize.INTEGER
   },
   capacity: {
@@ -44,15 +44,5 @@ exports.Class = db.define('class', {
 exports.Class.belongsTo(Subject);
 exports.Class.belongsTo(Term);
 exports.Class.belongsTo(Teacher);
-
-var initPromise = db.sync({force: true}).then(function(){
-  Term.build({name:'Spring 2015'}).save().then(function(term) {
-    Subject.build({name:'Computer Sci & Computer Eng', code:'CECS'}).save().then(function(subject){
-      Teacher.build({name:'Brian Velasquez', rate:4.2}).save().then(function(teacher){
-        exports.Class.build({name:'Operating System', code:'326', slot:'0354', termId:term.id, subjectId:subject.id, teacherId:teacher.id}).save();
-      });
-    });
-  });
-});
 
 module.exports = exports.Class;
