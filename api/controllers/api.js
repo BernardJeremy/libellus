@@ -1,7 +1,10 @@
 var rendering = require('../util/rendering');
 var url = require('url');
 
-var Model = require("../model.js");
+var Subject = require('../models/subject');
+var Teacher = require('../models/teacher');
+var Term = require('../models/term');
+var Class = require('../models/class');
 
 exports.home = function(req, res) {
   res.send("Welcome on Libellus !");
@@ -20,7 +23,7 @@ exports.getClasses = function(req, res) {
         };
   }
 
-  Model.Class
+  Class
   .findAll({
     include: [{ all: true }],
     where: whereTerm
@@ -34,7 +37,7 @@ exports.getClasses = function(req, res) {
 };
 
 exports.getTerms = function(req, res) {
-  Model.Term.findAll()
+  Term.findAll()
   .then(function(terms) {
     res.send(terms);
   }).catch(function(error) {
@@ -44,7 +47,7 @@ exports.getTerms = function(req, res) {
 };
 
 exports.getSubjects = function(req, res) {
-  Model.Subject.findAll()
+  Subject.findAll()
   .then(function(subjects) {
     res.send(subjects);
   }).catch(function(error) {
