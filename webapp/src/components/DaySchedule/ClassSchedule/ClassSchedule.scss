@@ -1,11 +1,15 @@
 .container {
-  position: absolute;
+  position: relative;
   top: 5px;
-  left: 5px;
+  left: 2px;
   right: 5px;
   padding: 5px;
   overflow: hidden;
   cursor: pointer;
+  transition: 0.5s padding ease;
+}
+.emptyClass .container {
+  padding: 0px;
 }
 .name {
   margin: 0;

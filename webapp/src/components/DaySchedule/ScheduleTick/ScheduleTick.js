@@ -1,9 +1,11 @@
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import classes from './ScheduleTick.scss'
+import classScheduleClasses from '../ClassSchedule/ClassSchedule.scss'
 import ClassSchedule from '../ClassSchedule/ClassSchedule'
 import SelectedClassWrapper from './SelectedClassWrapper'
 import _ from 'lodash'
+import classNames from 'classnames'
 
 const reducedDaysName = [ 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun' ]
 const hours = [ '1:00am', '2:00am', '3:00am', '4:00am', '5:00am', '6:00am', '7:00am', '8:00am', '9:00am', '10:00am', '11:00am', '12:00am', '1:00pm', '2:00pm', '3:00pm', '4:00pm', '5:00pm', '6:00pm', '7:00pm', '8:00pm', '9:00pm', '10:00pm', '11:00pm', '12:00pm' ]
@@ -50,17 +52,22 @@ export class DaySchedule extends React.Component {
       return true
     })
 
-    const classesEls = classesToRender.map((currentClass, i) => {
+    let renderedClasses = 0
+    const classesEls = this.props.classesInTick.map((currentClass, i) => {
+      let toRender = _.contains(classesToRender, currentClass)
       const style = {
-        width: (100 / classesToRender.length) + '%',
-        left: ((100 / classesToRender.length) * i) + '%',
+        width: toRender ? (100 / classesToRender.length) + '%' : 0,
+        left: ((100 / classesToRender.length) * renderedClasses) + '%',
+        padding: toRender ? '0 5px' : 0,
         zIndex: 10 + this.props.hour
+        // display: toRender ? 'block' : 'none'
       }
       if (this.props.hasPendingClasses) {
         style.marginLeft = 5
       }
+      if (toRender) { renderedClasses++ }
       return (
-        <div className={classes['class-container']} style={style} key={currentClass.id}>
+        <div className={classNames(classes['class-container'], {[classScheduleClasses.emptyClass]: !toRender})} style={style} key={currentClass.id}>
           <SelectedClassWrapper data={currentClass}>
             <ClassSchedule data={currentClass}/>
           </SelectedClassWrapper>
@@ -76,10 +83,12 @@ export class DaySchedule extends React.Component {
       <div className={classes['tick']} style={tickStyle}>
         <p>{hours[this.props.hour]}</p>
         <div className={classes['classes']}>
-          {classesEls}
+            {classesEls}
         </div>
       </div>
     )
+    // <ReactCSSTransitionGroup transitionName='class-transition' transitionEnterTimeout={500} transitionLeaveTimeout={500}>
+  // </ReactCSSTransitionGroup>
   }
 }
 

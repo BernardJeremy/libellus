@@ -25,5 +25,32 @@
 .class-container {
   position: absolute;
   padding: 0 5px;
-  transition: 0.5s ease left, 0.5s ease width;
+  transition: 0.5s ease left, 0.5s ease width, 0.5s ease padding;
+}
+:global {
+  .class-transition-enter {
+    opacity: 0.01;
+    transform: scale(0);
+    transform-origin: 50% 50%;
+  }
+
+  .class-transition-enter.class-transition-enter-active {
+    opacity: 1;
+    transform: scale(1);
+    transform-origin: 50% 50%;
+    transition: transform 500ms ease, opacity 500ms ease;
+  }
+
+  .class-transition-leave {
+    transform: scale(1);
+    transform-origin: 50% 50%;
+    opacity: 1;
+  }
+
+  .class-transition-leave.class-transition-leave-active {
+    opacity: 0.01;
+    transform: scale(0);
+    transform-origin: 50% 50%;
+    transition: transform 500ms ease, opacity 500ms ease;
+  }
 }

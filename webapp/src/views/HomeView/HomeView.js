@@ -57,6 +57,7 @@ export class HomeView extends React.Component {
           <CalendarFilter/>
         </div>
         <Calendar/>
+        <p className={classes['footer']}>Made with ♥ by <a href='https://github.com/BernardJeremy'>Jeremy Bernard</a>, <a href='http://besson.co/'>Guillaume Besson</a> and <a href='https://github.com/Sevauk'>Adrien Morel</a>. This project is open-source and available on <a href='https://github.com/BernardJeremy/libellus'>Github</a>.</p>
       </div>
     )
   }
