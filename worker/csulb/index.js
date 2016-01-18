@@ -54,7 +54,7 @@ client.init()
   })
 }).then(function(result) {
   return Promise.all([
-    model.saveClasses({code: 'CECS', name: 'Computer Engr & Computer Sci'}, result.value),
+    model.saveClasses({name: 'Spring 2016'}, {code: 'CECS', name: 'Computer Engr & Computer Sci'}, result.value),
     model.getSlotsLastUpdateDate({code: 'CECS', name: 'Computer Engr & Computer Sci'})
   ]).then((results) => {
     var slotsUpdateDates = results[1]

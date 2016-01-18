@@ -30,7 +30,7 @@ var Class = sequelize.define('class', {
   description: {
     type: Sequelize.TEXT
   },
-  enrolment: {
+  enrollment: {
     type: Sequelize.INTEGER
   },
   capacity: {
@@ -65,8 +65,15 @@ var Teacher = sequelize.define('teacher', {
   }
 })
 
+var Term = sequelize.define('term', {
+  name: {
+    type: Sequelize.STRING
+  }
+});
+
 Class.belongsTo(Subject)
 Class.belongsTo(Teacher)
+Class.belongsTo(Term)
 
 var initPromise = sequelize.sync()
 
@@ -79,23 +86,34 @@ var smDaytoFull = {
   'Sa': 'Sat'
 }
 
+function ampmto24h(str) {
+  var hours = Number(str.match(/^(\d+)/)[1])
+  var minutes = Number(str.match(/:(\d+)/)[1])
+  var AMPM = str.match(/(AM|PM)$/)[1];
+  if(AMPM == "PM" && hours < 12) hours = hours + 12
+  if(AMPM == "AM" && hours === 12) hours = hours - 12
+  var sHours = hours.toString()
+  var sMinutes = minutes.toString()
+  if(hours<10) sHours = "0" + sHours
+  if(minutes<10) sMinutes = "0" + sMinutes
+  return sHours + ':' + sMinutes
+}
+
 function dateStringToDate(dateString) {
   if (dateString === 'TBA') { return [] }
   var days = _.map(_.chunk(dateString.split(' ')[0], 2), (str) => str.join(''))
   var hours = dateString.split(' ').splice(1).join(' ').split(' - ')
-  var start = Number(hours[0].split(':')[0]) * 60 + Number(_.slice(hours[0].split(':')[1], 0, -2).join('')) + (_.endsWith(hours[0], 'PM') ? 12 * 60 : 0)
-  var end = Number(hours[1].split(':')[0]) * 60 + Number(_.slice(hours[1].split(':')[1], 0, -2).join('')) + (_.endsWith(hours[1], 'PM') ? 12 * 60 : 0)
 
   return days.map((day) => {
     return {
       day: smDaytoFull[day],
-      start: Math.floor(start / 60) + ':' + start % 60,
-      end: Math.floor(end / 60) + ':' + _.padStart(String(end % 60), 2, '0'),
+      start: ampmto24h(hours[0]),
+      end: ampmto24h(hours[1]),
     }
   })
 }
 
-function generateDBSectionObj(subject, teachers, currentClass) {
+function generateDBSectionObj(term, subject, teachers, currentClass) {
   if (!currentClass.class_name) { return }
   var className = _.trim(_.slice(currentClass.class_name.split('-'), 1).join('-'))
   var classCode = _.trim(_.trim(currentClass.class_name.split('-')[0]).slice(subject.dataValues.code.length + 1))
@@ -109,7 +127,8 @@ function generateDBSectionObj(subject, teachers, currentClass) {
       time: dateStringToDate(slot.date),
       section: slot.section.split('\n')[0],
       subjectId: subject.id,
-      teacherId: teachers[slot.instructor]
+      teacherId: teachers[slot.instructor],
+      termId: term.id
     }
   })
   return _.map(slots, (slot) => {
@@ -137,9 +156,12 @@ function findOrCreateTeachers(rawClasses) {
   })
 }
 
-exports.saveClasses = function(subjectInfo, classes) {
+exports.saveClasses = function(termInfo, subjectInfo, classes) {
   var rawClasses = classes;
   initPromise.then(() => Promise.all([
+    Term.findOrCreate({
+      where: {name: termInfo.name}
+    }),
     Subject.findOrCreate({
       where: {code: subjectInfo.code},
       defaults: {
@@ -149,11 +171,12 @@ exports.saveClasses = function(subjectInfo, classes) {
     }),
     findOrCreateTeachers(rawClasses)
   ])).then((results) => {
-    var subject = results[0][0]
-    var teachers = results[1]
+    var term = results[0][0]
+    var subject = results[1][0]
+    var teachers = results[2]
     console.log('Found %d teachers', _.keys(teachers).length)
     var slotsPromises = _.chain(rawClasses).map(function(currentClass) {
-      return generateDBSectionObj(subject, teachers, currentClass)
+      return generateDBSectionObj(term, subject, teachers, currentClass)
     }).compact().flatten().value()
     return Promise.all(slotsPromises)
   })
