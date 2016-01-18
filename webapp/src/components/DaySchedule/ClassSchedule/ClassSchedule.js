@@ -5,29 +5,30 @@ import classes from './ClassSchedule.scss'
 import { hashCode } from 'utils'
 import Paper from 'material-ui/lib/paper'
 import randomcolor from 'randomcolor'
-import classnames from 'classnames'
+// import classnames from 'classnames'
 import Popover from 'material-ui/lib/popover/popover'
 import Divider from 'material-ui/lib/divider'
 import { selectClassId, addToList as addCourseToList, removeFromList as removeCourseFromList } from 'redux/modules/classes'
 import _ from 'lodash'
 import FontAwesome from 'react-fontawesome'
 import RaisedButton from 'material-ui/lib/raised-button'
+import shouldPureComponentUpdate from 'react-pure-render/function'
 
 const mapStateToProps = (state, props) => ({
   hourHeight: state.scheduleStyle.height,
-  selectedClassId: state.classes.selectedClassId,
   classInList: _.contains(state.classes.registeredClasses, props.data.id)
 })
 export class ClassSchedule extends React.Component {
   static propTypes = {
     data: PropTypes.object.isRequired,
     hourHeight: PropTypes.number.isRequired,
-    selectedClassId: PropTypes.string,
     selectClassId: PropTypes.func.isRequired,
     addCourseToList: PropTypes.func.isRequired,
     removeCourseFromList: PropTypes.func.isRequired,
     classInList: PropTypes.bool.isRequired
   };
+
+  shouldComponentUpdate = shouldPureComponentUpdate;
 
   constructor () {
     super()
@@ -55,7 +56,7 @@ export class ClassSchedule extends React.Component {
   render () {
     const containerStyle = {
       height: this.props.data.time.duration / 60 * this.props.hourHeight,
-      backgroundColor: randomcolor({luminosity: 'bright', seed: hashCode(this.props.data.name)})
+      backgroundColor: randomcolor({luminosity: 'bright', seed: hashCode(this.props.data.name)}).split('-').join('')
     }
 
     if (this.props.data.time.startMinute % 60) {
@@ -68,7 +69,7 @@ export class ClassSchedule extends React.Component {
       <div>
         <Paper
           zDepth={this.state.popoverOpened ? 3 : 1}
-          className={classnames(classes['container'], {[classes['non-selected']]: this.props.selectedClassId && this.props.selectedClassId !== this.props.data.id})}
+          className={classes['container']}
           style={containerStyle}
           onClick={this.onClick}
           ref='container'>
@@ -80,15 +81,16 @@ export class ClassSchedule extends React.Component {
           onRequestClose={this.popoverClosed}
           anchorOrigin={{'horizontal': 'right', 'vertical': 'top'}}
           targetOrigin={{'horizontal': 'left', 'vertical': 'top'}}
-          className={classes['popover']}>
+          className={classes['popover']}
+          autoCloseWhenOffScreen={false}>
           <p className={classes['title']}>{this.props.data.code} {this.props.data.name}</p>
           <p className={classes['description']}>{this.props.data.description}</p>
           <p className={classes['room']}>{this.props.data.room} - {this.props.data.teacher.name} <a target='_blank' href={this.props.data.teacher.rate_link}>{stars}</a></p>
           <Divider />
-          <p className={classes['capacity']}>Capacity: {this.props.data.capacity.total_capacity}</p>
+          <p className={classes['capacity']}>Capacity: {this.props.data.capacity}</p>
           <div className={classes['capacity-details']}>
-            <p className={classes['enrolment']}>Enrolment: {this.props.data.capacity.enrollment}</p>
-            <p className={classes['seats-left']}>Seats Left: {this.props.data.capacity.total_capacity - this.props.data.capacity.enrollment}</p>
+            <p className={classes['enrolment']}>Enrolment: {this.props.data.enrollment}</p>
+            <p className={classes['seats-left']}>Seats Left: {this.props.data.capacity - this.props.data.enrollment}</p>
           </div>
           <Divider />
           <RaisedButton style={{marginTop: 5}} label={this.props.classInList ? 'Remove from list' : 'Add to list'} primary onTouchTap={this.onToggleCourse} fullWidth/>

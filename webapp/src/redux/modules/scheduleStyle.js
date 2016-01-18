@@ -6,4 +6,4 @@ export const changeScheduleHeight = createAction(CHANGE_SCHEDULE_HEIGHT, (height
 
 export default handleActions({
   [CHANGE_SCHEDULE_HEIGHT]: (state, { payload }) => { return {...state, height: payload} }
-}, {height: 40})
+}, {height: 50})

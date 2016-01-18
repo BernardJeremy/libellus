@@ -12,7 +12,7 @@ import { selectClassId } from 'redux/modules/classes'
 import Colors from 'material-ui/lib/styles/colors'
 
 const mapStateToProps = (state) => ({
-  classesName: state.classes.raw.map((currentClass) => `${currentClass.code} ${currentClass.name}`),
+  classesName: state.classes.raw.map((currentClass) => `${currentClass.code} - ${currentClass.section} - ${currentClass.name}`),
   classes: state.classes.raw
 })
 export class HomeView extends React.Component {

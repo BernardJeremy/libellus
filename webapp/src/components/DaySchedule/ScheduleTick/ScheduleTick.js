@@ -2,6 +2,7 @@ import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import classes from './ScheduleTick.scss'
 import ClassSchedule from '../ClassSchedule/ClassSchedule'
+import SelectedClassWrapper from './SelectedClassWrapper'
 import _ from 'lodash'
 
 const reducedDaysName = [ 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun' ]
@@ -44,8 +45,10 @@ export class DaySchedule extends React.Component {
         style.marginLeft = 5
       }
       return (
-        <div className={classes['class-container']} style={style} key={currentClass.name}>
-          <ClassSchedule data={currentClass}/>
+        <div className={classes['class-container']} style={style} key={currentClass.id}>
+          <SelectedClassWrapper data={currentClass}>
+            <ClassSchedule data={currentClass}/>
+          </SelectedClassWrapper>
         </div>
       )
     })

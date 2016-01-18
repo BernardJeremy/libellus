@@ -8,7 +8,7 @@ import { load as loadSubjects } from 'redux/modules/subjects'
 import { load as loadClasses } from 'redux/modules/classes'
 import { changeScheduleHeight } from 'redux/modules/scheduleStyle'
 import classes from './CalendarFilter.scss'
-// import Slider from 'material-ui/lib/slider'
+import Slider from 'material-ui/lib/slider'
 import Paper from 'material-ui/lib/paper'
 // import classNames from 'classnames'
 import ClassesList from './ClassesList/ClassesList'
@@ -36,6 +36,9 @@ export class CalendarFilter extends React.Component {
   componentDidMount () {
     this.props.loadTerms()
     this.props.loadSubjects()
+    if (this.props.filters.termId && this.props.filters.subjectId) {
+      this.props.loadClasses({subjectId: this.props.filters.subjectId, termId: this.props.filters.termId})
+    }
   }
 
   termChanged = (event, index, value) => {
@@ -89,6 +92,10 @@ export class CalendarFilter extends React.Component {
               </SelectField>
             </div>
           </Paper>
+          <Paper className={classes['slider-container']}>
+            <p>Row Height</p>
+            <Slider min={20} max={100} step={10} value={this.props.rowHeight} className={classes['row-height-selector']} onChange={this.onChangeHeight} style={{margin: 0}}/>
+          </Paper>
         </div>
         <div className={classes['row']}>
           <Paper className={classes['classes-list']}>
@@ -97,9 +104,6 @@ export class CalendarFilter extends React.Component {
         </div>
       </div>
     )
-  // <Paper className={classes['slider-container']}>
-  //   <Slider min={20} max={100} value={this.props.rowHeight} className={classes['row-height-selector']} onChange={this.onChangeHeight} description='Row Height' />
-  // </Paper>
   }
 }
 

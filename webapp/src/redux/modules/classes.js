@@ -21,7 +21,7 @@ export const addToList = createAction(CLASSES_ADD_TO_LIST, (id) => id)
 export const removeFromList = createAction(CLASSES_REMOVE_FROM_LIST, (id) => id)
 
 export default handleActions({
-  [CLASSES_LOAD]: (state) => { return {...state, loading: true, failure: false, content: [], raw: []} },
+  [CLASSES_LOAD]: (state) => { return {...state, loading: true, failure: false, content: [], raw: [], startClassMinutes: 0, endClassMinutes: 60 * 24} },
   [CLASSES_LOADED]: (state, { result }) => {
     const classes = _.chain(result).map((currentClass) => {
       return _.map(currentClass.time, (time) => {
@@ -34,10 +34,12 @@ export default handleActions({
         return classTime
       })
     }).flatten().value()
-    return {...state, loading: false, failure: false, content: classes, raw: result}
+    const startClassMinutes = _.chain(classes).map('time.startMinute').min().value()
+    const endClassMinutes = _.chain(classes).map('time.endMinute').max().value()
+    return {...state, loading: false, failure: false, content: classes, raw: result, startClassMinutes, endClassMinutes}
   },
   [CLASSES_LOAD_FAIL]: (state, { payload }) => {
-    return {...state, loading: false, failure: true, content: [], raw: []}
+    return {...state, loading: false, failure: true, content: [], raw: [], startClassMinutes: 0, endClassMinutes: 60 * 24}
   },
   [CLASSES_SELECT_ID]: (state, {payload}) => {
     return {...state, selectedClassId: payload}
@@ -48,4 +50,4 @@ export default handleActions({
   [CLASSES_REMOVE_FROM_LIST]: (state, {payload}) => {
     return {...state, selectedClassId: payload, registeredClasses: _.without(state.registeredClasses, payload)}
   }
-}, {loading: false, failure: false, content: [], raw: [], selectedClassId: null, registeredClasses: []})
+}, {loading: false, failure: false, content: [], raw: [], selectedClassId: null, registeredClasses: [], startClassMinutes: 0, endClassMinutes: 60 * 24})
