@@ -19,7 +19,7 @@ export class DaySchedule extends React.Component {
 
   render () {
     const hoursTicks = _.times(24, (hour) => {
-      if ((hour + 1) * 60 < this.props.startClassMinutes || (hour - 1) * 60 > this.props.endClassMinutes) {
+      if ((hour + 1) * 60 < this.props.startClassMinutes || hour * 60 > this.props.endClassMinutes) {
         return
       }
       return <ScheduleTick hour={hour} day={this.props.day} key={hour} />

@@ -1,6 +1,9 @@
 .tick {
   width: 100%;
   position: relative;
+  &:first-child {
+    height: 20px !important;
+  }
   & > p {
     font-size: 10px;
     position: absolute;
@@ -22,4 +25,5 @@
 .class-container {
   position: absolute;
   padding: 0 5px;
+  transition: 0.5s ease left, 0.5s ease width;
 }

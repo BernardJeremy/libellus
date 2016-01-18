@@ -84,6 +84,7 @@ export class ClassSchedule extends React.Component {
           className={classes['popover']}
           autoCloseWhenOffScreen={false}>
           <p className={classes['title']}>{this.props.data.code} {this.props.data.name}</p>
+          <p className={classes['section']}>{this.props.data.section}</p>
           <p className={classes['description']}>{this.props.data.description}</p>
           <p className={classes['room']}>{this.props.data.room} - {this.props.data.teacher.name} <a target='_blank' href={this.props.data.teacher.rate_link}>{stars}</a></p>
           <Divider />
