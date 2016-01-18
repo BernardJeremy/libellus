@@ -8,6 +8,7 @@
     "npm": ">=1.2.x"
   },
   "dependencies": {
+    "cors": "^2.7.1",
     "express": "^4.12.4",
     "pg": "^4.4.3",
     "sequelize": "^3.17.3"
