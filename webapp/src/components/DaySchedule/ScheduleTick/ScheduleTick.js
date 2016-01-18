@@ -23,7 +23,8 @@ const mapStateToProps = (state, props) => {
     hasPendingClasses,
     showConflictedCourses: state.filters.showConflictedCourses,
     registeredClasses: state.classes.registeredClasses.map((id) => _.find(state.classes.raw, {id})),
-    showNonRegisteredClasses: state.filters.showNonRegisteredClasses
+    showNonRegisteredClasses: state.filters.showNonRegisteredClasses,
+    levelsToShow: state.filters.levels
   }
 }
 export class DaySchedule extends React.Component {
@@ -33,6 +34,7 @@ export class DaySchedule extends React.Component {
     day: PropTypes.number.isRequired,
     classesInTick: PropTypes.arrayOf(PropTypes.object),
     registeredClasses: PropTypes.arrayOf(PropTypes.object),
+    levelsToShow: PropTypes.arrayOf(PropTypes.bool),
     hasPendingClasses: PropTypes.bool,
     showConflictedCourses: PropTypes.bool,
     showNonRegisteredClasses: PropTypes.bool
@@ -43,6 +45,7 @@ export class DaySchedule extends React.Component {
       const registered = _.any(this.props.registeredClasses, {id: currentClass.id})
       if (!registered && !this.props.showNonRegisteredClasses) { return false }
       if (registered) { return true }
+      if (!this.props.levelsToShow[Math.floor(Number(currentClass.code) / 100) - 1]) { return false }
       if (this.props.showConflictedCourses) { return true }
       if (_.chain(this.props.registeredClasses).map('time').flatten().any((time) =>
         time.day === currentClass.time.day &&

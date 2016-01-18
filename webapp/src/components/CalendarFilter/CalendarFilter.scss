@@ -25,7 +25,7 @@
   display: block;
   line-height: 36px;
 }
-.slider-container {
+.slider-container, .level-selector-container {
   margin-top: 10px;
   padding: 16px;
   & > p {
@@ -35,4 +35,19 @@
     line-height: 20px;
     margin: 0;
   }
+}
+.level-selector-container {
+  padding-bottom: 0;
+}
+.levels-container {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  height: 120px;
+}
+.level-switch {
+  margin: 5px 0;
+  flex: 1 0 25%;
+  width: auto !important;
+  margin-right: 16px;
 }

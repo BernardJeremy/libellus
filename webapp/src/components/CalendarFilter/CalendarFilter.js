@@ -2,7 +2,7 @@ import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import SelectField from 'material-ui/lib/select-field'
 import MenuItem from 'material-ui/lib/menus/menu-item'
-import { changeTerm, changeSubject } from 'redux/modules/filters'
+import { changeTerm, changeSubject, changeLevelVisibility } from 'redux/modules/filters'
 import { load as loadTerms } from 'redux/modules/terms'
 import { load as loadSubjects } from 'redux/modules/subjects'
 import { load as loadClasses } from 'redux/modules/classes'
@@ -12,12 +12,15 @@ import Slider from 'material-ui/lib/slider'
 import Paper from 'material-ui/lib/paper'
 // import classNames from 'classnames'
 import ClassesList from './ClassesList/ClassesList'
+import Checkbox from 'material-ui/lib/checkbox'
+import _ from 'lodash'
 
 const mapStateToProps = (state) => ({
   filters: state.filters,
   terms: state.terms.content,
   subjects: state.subjects.content,
-  rowHeight: state.scheduleStyle.height
+  rowHeight: state.scheduleStyle.height,
+  levels: state.filters.levels
 })
 export class CalendarFilter extends React.Component {
   static propTypes = {
@@ -27,9 +30,11 @@ export class CalendarFilter extends React.Component {
     loadClasses: PropTypes.func.isRequired,
     loadTerms: PropTypes.func.isRequired,
     loadSubjects: PropTypes.func.isRequired,
+    changeLevelVisibility: PropTypes.func.isRequired,
     changeScheduleHeight: PropTypes.func.isRequired,
     rowHeight: PropTypes.number.isRequired,
     terms: PropTypes.arrayOf(PropTypes.object),
+    levels: PropTypes.arrayOf(PropTypes.bool),
     subjects: PropTypes.arrayOf(PropTypes.object)
   };
 
@@ -55,6 +60,12 @@ export class CalendarFilter extends React.Component {
     this.props.changeScheduleHeight(value)
   };
 
+  toggleLevel = (level) => {
+    return () => {
+      this.props.changeLevelVisibility(level, !this.props.levels[level])
+    }
+  };
+
   render () {
     const terms = this.props.terms.map((term) =>
       <MenuItem
@@ -68,6 +79,15 @@ export class CalendarFilter extends React.Component {
         key={subject.id}
         primaryText={subject.name} />
     )
+
+    const levels = _.times(6, (level) => {
+      return <Checkbox
+        defaultChecked={this.props.levels[level]}
+        className={classes['level-switch']}
+        label={(level + 1) * 100}
+        onCheck={this.toggleLevel(level)}
+        key={level}/>
+    })
 
     return (
       <div className={classes['container']}>
@@ -96,6 +116,12 @@ export class CalendarFilter extends React.Component {
             <p>Row Height</p>
             <Slider min={20} max={100} step={10} value={this.props.rowHeight} className={classes['row-height-selector']} onChange={this.onChangeHeight} style={{margin: 0}}/>
           </Paper>
+          <Paper className={classes['level-selector-container']}>
+            <p>Levels</p>
+            <div className={classes['levels-container']}>
+              {levels}
+            </div>
+          </Paper>
         </div>
         <div className={classes['row']}>
           <Paper className={classes['classes-list']}>
@@ -107,4 +133,4 @@ export class CalendarFilter extends React.Component {
   }
 }
 
-export default connect(mapStateToProps, {changeTerm, changeSubject, loadTerms, loadSubjects, loadClasses, changeScheduleHeight})(CalendarFilter)
+export default connect(mapStateToProps, {changeTerm, changeSubject, loadTerms, loadSubjects, loadClasses, changeScheduleHeight, changeLevelVisibility})(CalendarFilter)
