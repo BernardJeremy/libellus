@@ -10,41 +10,23 @@ exports.home = function(req, res) {
 exports.getClasses = function(req, res) {
   var subjectId = req.params.subjectId;
   var termId = url.parse(req.url, true).query.term;
+  var whereTerm = {subjectId: subjectId};
 
-  Model.Class.findAll().then(function(classes){
-    
-    console.log(classes);
+
+  if (typeof termId !== 'undefined') {
+    whereTerm = {
+          subjectId: subjectId,
+          termId: termId
+        };
+  }
+
+  Model.Class
+  .findAll({
+    include: [{ all: true }],
+    where: whereTerm
+  })
+  .then(function(classes){
     res.send(classes);
-    return;
-    for (var i in completeJson) {
-      var json = completeJson[i];
-
-      if (typeof termId !== 'undefined') {
-        if (json.fk_term != termId) {
-          delete completeJson[i];
-          continue;
-        }
-      }
-
-      var teacherId = json.fk_teacher;
-      json.capacity = {};
-      json.capacity.wait_list = json.wait_list;
-      json.capacity.enrollment = json.enrollment;
-      json.capacity.total_capacity = json.total_capacity;
-      json.time = json.time;
-
-      delete json.fk_teacher;
-      delete json.fk_term;
-      delete json.teacher.id;
-      delete json.fk_subject;
-      delete json.total_capacity;
-      delete json.enrollment;
-      delete json.wait_list;
-      delete json.schedules;
-    }
-
-    res.send(completeJson);
-
   }).catch(function(error) {
     console.log(error);
     res.send('An error occured');
@@ -52,21 +34,21 @@ exports.getClasses = function(req, res) {
 };
 
 exports.getTerms = function(req, res) {
-  /*  new Terms().fetchAll()
+  Model.Term.findAll()
   .then(function(terms) {
-  res.send(terms.toJSON());
-}).catch(function(error) {
-console.log(error);
-res.send('An error occured');
-});*/
+    res.send(terms);
+  }).catch(function(error) {
+    console.log(error);
+    res.send('An error occured');
+  });
 };
 
 exports.getSubjects = function(req, res) {
-  /*new Subjects().fetchAll()
+  Model.Subject.findAll()
   .then(function(subjects) {
-  res.send(subjects.toJSON());
-}).catch(function(error) {
-console.log(error);
-res.send('An error occured');
-});*/
+    res.send(subjects);
+  }).catch(function(error) {
+    console.log(error);
+    res.send('An error occured');
+  });
 };
