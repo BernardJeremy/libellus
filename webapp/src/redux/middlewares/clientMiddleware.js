@@ -129,7 +129,8 @@ methods.forEach((method) =>
     // if (mocks[path]) {
     //   return resolve(mocks[path])
     // }
-    const request = superagent[method]('http://localhost:8080' + path)
+    var host = (window.location.hostname === 'localhost') ? 'localhost:8080' : 'api.libell.us'
+    const request = superagent[method]('http://' + host + path)
     if (params) {
       request.query(params)
     }

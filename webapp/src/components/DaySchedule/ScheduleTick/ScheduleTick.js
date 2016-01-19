@@ -24,7 +24,8 @@ const mapStateToProps = (state, props) => {
     showConflictedCourses: state.filters.showConflictedCourses,
     registeredClasses: state.classes.registeredClasses.map((id) => _.find(state.classes.raw, {id})),
     showNonRegisteredClasses: state.filters.showNonRegisteredClasses,
-    levelsToShow: state.filters.levels
+    levelsToShow: state.filters.levels,
+    minSeats: state.filters.minSeats
   }
 }
 export class DaySchedule extends React.Component {
@@ -37,7 +38,8 @@ export class DaySchedule extends React.Component {
     levelsToShow: PropTypes.arrayOf(PropTypes.bool),
     hasPendingClasses: PropTypes.bool,
     showConflictedCourses: PropTypes.bool,
-    showNonRegisteredClasses: PropTypes.bool
+    showNonRegisteredClasses: PropTypes.bool,
+    minSeats: PropTypes.number
   };
 
   render () {
@@ -46,6 +48,7 @@ export class DaySchedule extends React.Component {
       if (!registered && !this.props.showNonRegisteredClasses) { return false }
       if (registered) { return true }
       if (!this.props.levelsToShow[Math.floor(Number(currentClass.code) / 100) - 1]) { return false }
+      if (currentClass.capacity - currentClass.enrollment < this.props.minSeats) { return false }
       if (this.props.showConflictedCourses) { return true }
       if (_.chain(this.props.registeredClasses).map('time').flatten().any((time) =>
         time.day === currentClass.time.day &&

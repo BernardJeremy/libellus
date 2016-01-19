@@ -13,18 +13,26 @@ import Colors from 'material-ui/lib/styles/colors'
 
 const mapStateToProps = (state) => ({
   classesName: state.classes.raw.map((currentClass) => `${currentClass.code} - ${currentClass.section} - ${currentClass.name}`),
-  classes: state.classes.raw
+  classes: state.classes.raw,
+  filters: state.filters
 })
 export class HomeView extends React.Component {
   static propTypes = {
     classesName: PropTypes.arrayOf(PropTypes.string),
     classes: PropTypes.arrayOf(PropTypes.object),
-    selectClassId: PropTypes.func.isRequired
+    selectClassId: PropTypes.func.isRequired,
+    filters: PropTypes.object
   };
 
   constructor () {
     super()
-    this.state = {showFilter: true}
+    this.state = {showFilter: false}
+  }
+
+  componentDidMount () {
+    if (!this.props.filters.termId || !this.props.filters.subjectId) {
+      this.state.showFilter = true
+    }
   }
 
   toggleFilter = () => {
@@ -53,7 +61,7 @@ export class HomeView extends React.Component {
     return (
       <div>
         <AppBar title='Libellus for CSULB' showMenuIconButton={false} iconElementRight={rightMenuIcon}/>
-        <div className={classNames(classes['filterContainer'], {[classes['hidden']]: this.state.showFilter})}>
+        <div className={classNames(classes['filterContainer'], {[classes['hidden']]: !this.state.showFilter})}>
           <CalendarFilter/>
         </div>
         <Calendar/>

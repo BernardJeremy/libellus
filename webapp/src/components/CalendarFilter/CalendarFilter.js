@@ -2,7 +2,7 @@ import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import SelectField from 'material-ui/lib/select-field'
 import MenuItem from 'material-ui/lib/menus/menu-item'
-import { changeTerm, changeSubject, changeLevelVisibility } from 'redux/modules/filters'
+import { changeTerm, changeSubject, changeLevelVisibility, changeMinSeats } from 'redux/modules/filters'
 import { load as loadTerms } from 'redux/modules/terms'
 import { load as loadSubjects } from 'redux/modules/subjects'
 import { load as loadClasses } from 'redux/modules/classes'
@@ -20,7 +20,8 @@ const mapStateToProps = (state) => ({
   terms: state.terms.content,
   subjects: state.subjects.content,
   rowHeight: state.scheduleStyle.height,
-  levels: state.filters.levels
+  levels: state.filters.levels,
+  minSeats: state.filters.minSeats
 })
 export class CalendarFilter extends React.Component {
   static propTypes = {
@@ -35,7 +36,9 @@ export class CalendarFilter extends React.Component {
     rowHeight: PropTypes.number.isRequired,
     terms: PropTypes.arrayOf(PropTypes.object),
     levels: PropTypes.arrayOf(PropTypes.bool),
-    subjects: PropTypes.arrayOf(PropTypes.object)
+    subjects: PropTypes.arrayOf(PropTypes.object),
+    minSeats: PropTypes.number,
+    changeMinSeats: PropTypes.func.isRequired
   };
 
   componentDidMount () {
@@ -66,6 +69,10 @@ export class CalendarFilter extends React.Component {
     }
   };
 
+  onChangeMinSeats = (e, value) => {
+    this.props.changeMinSeats(value)
+  };
+
   render () {
     const terms = this.props.terms.map((term) =>
       <MenuItem
@@ -88,6 +95,8 @@ export class CalendarFilter extends React.Component {
         onCheck={this.toggleLevel(level)}
         key={level}/>
     })
+
+    console.log(this.props.minSeats)
 
     return (
       <div className={classes['container']}>
@@ -112,15 +121,21 @@ export class CalendarFilter extends React.Component {
               </SelectField>
             </div>
           </Paper>
-          <Paper className={classes['slider-container']}>
-            <p>Row Height</p>
-            <Slider min={20} max={100} step={10} value={this.props.rowHeight} className={classes['row-height-selector']} onChange={this.onChangeHeight} style={{margin: 0}}/>
-          </Paper>
           <Paper className={classes['level-selector-container']}>
             <p>Levels</p>
             <div className={classes['levels-container']}>
               {levels}
             </div>
+          </Paper>
+          <Paper className={classes['min-seats-container']}>
+            <p>Minimum seats available: {String(this.props.minSeats)}</p>
+            <div className={classes['min-seats-slider-container']}>
+              <Slider min={0} max={30} step={1} value={this.props.minSeats} className={classes['min-seats-slider']} onChange={this.onChangeMinSeats} style={{margin: 0}}/>
+            </div>
+          </Paper>
+          <Paper className={classes['slider-container']}>
+            <p>Row Height</p>
+            <Slider min={20} max={100} step={10} value={this.props.rowHeight} className={classes['row-height-selector']} onChange={this.onChangeHeight} style={{margin: 0}}/>
           </Paper>
         </div>
         <div className={classes['row']}>
@@ -133,4 +148,4 @@ export class CalendarFilter extends React.Component {
   }
 }
 
-export default connect(mapStateToProps, {changeTerm, changeSubject, loadTerms, loadSubjects, loadClasses, changeScheduleHeight, changeLevelVisibility})(CalendarFilter)
+export default connect(mapStateToProps, {changeTerm, changeSubject, loadTerms, loadSubjects, loadClasses, changeScheduleHeight, changeLevelVisibility, changeMinSeats})(CalendarFilter)
