@@ -9,7 +9,7 @@ rate_link = None
 refresh_time = 60 * 60 * 24 # refresh every 24 hours
 
 try:
-    conn = psycopg2.connect("dbname=libellus user=dev password=dev1 host=localhost")
+    conn = psycopg2.connect("dbname=libellus user=libellus_api host=localhost")
 except psycopg2.Error as e:
     print('could not connect to db {}'.format(e))
     exit(1)
@@ -32,9 +32,11 @@ def load_prof_page(pid):
 def extract_rating(prof_name):
 
     prof_html = look_for_prof(prof_name)
-
+    grade = 0
+    
     m = re.search(r'<div class="grade">(\d\.\d)</div>', prof_html)
     grade = m.group(1)
+
     return grade
 
 def look_for_prof(name):
@@ -71,7 +73,10 @@ def check_db():
     cur.close()
     if rows != []:
         for r in rows:
-            update_teacher(r[1])
+            try:
+              update_teacher(r[1])
+            except:
+              print('an error occured when parsing {} professor'.format(r[1]))
     else:
         print('libellus worker: nothing to update')
 
