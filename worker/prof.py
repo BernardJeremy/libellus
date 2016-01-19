@@ -6,7 +6,7 @@ import re
 import psycopg2
 
 rate_link = None
-refresh_time = 0 * 60 * 60 * 24 # refresh every 24 hours
+refresh_time = 60 * 60 * 24 # refresh every 24 hours
 
 try:
     conn = psycopg2.connect("dbname=libellus user=dev host=localhost")
