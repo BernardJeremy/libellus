@@ -9,7 +9,7 @@ rate_link = None
 refresh_time = 60 * 60 * 24 # refresh every 24 hours
 
 try:
-    conn = psycopg2.connect("dbname=libellus user=libellus_api host=localhost")
+    conn = psycopg2.connect("dbname=libellus user=dev host=localhost")
 except psycopg2.Error as e:
     print('could not connect to db {}'.format(e))
     exit(1)
@@ -33,7 +33,7 @@ def extract_rating(prof_name):
 
     prof_html = look_for_prof(prof_name)
     grade = 0
-    
+
     m = re.search(r'<div class="grade">(\d\.\d)</div>', prof_html)
     grade = m.group(1)
 
@@ -60,14 +60,14 @@ def update_teacher(name):
     rating = extract_rating(name)
 
     cur = conn.cursor()
-    cur.execute("UPDATE teachers SET rate = {}, \"updatedAt\" = NOW() WHERE name = '{}'".format(rating, name))
+    cur.execute("UPDATE teachers SET rate = {}, \"rateLastUpdated\" = NOW() WHERE name = '{}'".format(rating, name))
     conn.commit()
     print('libellus worker: {} has been updated'.format(name))
 
 def check_db():
 
     cur = conn.cursor()
-    cur.execute("SELECT * FROM teachers WHERE \"updatedAt\" < NOW() - INTERVAL '{} SECONDS'".format(refresh_time))
+    cur.execute("SELECT * FROM teachers WHERE \"rateLastUpdated\" IS NULL OR \"rateLastUpdated\" < NOW() - INTERVAL '{} SECONDS' ".format(refresh_time))
 
     rows = cur.fetchall()
     cur.close()
