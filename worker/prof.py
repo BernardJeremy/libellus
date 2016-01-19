@@ -6,7 +6,7 @@ import re
 import psycopg2
 
 rate_link = None
-refresh_time = 60 * 60 * 24 # refresh every 24 hours
+refresh_time = 0 * 60 * 60 * 24 # refresh every 24 hours
 
 try:
     conn = psycopg2.connect("dbname=libellus user=dev host=localhost")
@@ -60,7 +60,7 @@ def update_teacher(name):
     rating = extract_rating(name)
 
     cur = conn.cursor()
-    cur.execute("UPDATE teachers SET rate = {}, \"rateLastUpdated\" = NOW() WHERE name = '{}'".format(rating, name))
+    cur.execute("UPDATE teachers SET rate = {}, \"rateLastUpdated\" = NOW(), \"rateLink\" = '{}' WHERE name = '{}'".format(rating, rate_link, name))
     conn.commit()
     print('libellus worker: {} has been updated'.format(name))
 
