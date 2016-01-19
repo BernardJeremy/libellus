@@ -26,10 +26,12 @@ client.init()
 .selectByValue('#CLASS_SRCH_WRK2_STRM$45$', '2162')
 .pause(1000)
 .selectByValue('#SSR_CLSRCH_WRK_SUBJECT_SRCH$0', 'CECS')
+.selectByValue('#SSR_CLSRCH_WRK_INSTRUCTION_MODE$3', 'P')
+.click('#SSR_CLSRCH_WRK_SSR_OPEN_ONLY$4')
 .click('#CLASS_SRCH_WRK2_SSR_PB_CLASS_SRCH')
 .waitForExist('##ICSave', 6000)
 .click('##ICSave')
-.waitForExist('#DERIVED_REGFRM1_SS_TRANSACT_TITLE', 10000)
+.waitForExist('#DERIVED_REGFRM1_SS_TRANSACT_TITLE', 30000)
 .execute(function() {
   var scriptElt = document.createElement('script');
   scriptElt.type = 'text/javascript';
@@ -74,9 +76,9 @@ client.init()
         }
 
         var button = '#MTG_CLASSNAME$' + count.toString();
-        currentClient = currentClient.waitForExist(button, 5000)
+        currentClient = currentClient.waitForExist(button, 30000)
         .click(button)
-        .waitForExist('#DERIVED_CLSRCH_DESCRLONG', 5000)
+        .waitForExist('#DERIVED_CLSRCH_DESCRLONG', 30000)
         .execute(function() {
           return {
             slot: $('#SSR_CLS_DTL_WRK_CLASS_NBR').text(),
@@ -87,7 +89,7 @@ client.init()
         }).then(function(result) {
           model.saveSlotInfo({code: 'CECS', name: 'Computer Engr & Computer Sci'}, result.value)
         })
-        .waitForExist('#CLASS_SRCH_WRK2_SSR_PB_BACK', 5000)
+        .waitForExist('#CLASS_SRCH_WRK2_SSR_PB_BACK', 30000)
         .click('#CLASS_SRCH_WRK2_SSR_PB_BACK');
       }
     }
