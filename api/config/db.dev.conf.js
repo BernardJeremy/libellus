@@ -1,9 +1,9 @@
 module.exports = {
-  database : 'libellus',
-  username : 'dev',
-  password : 'dev1',
+  database : process.env.DBNAME || 'libellus',
+  username : process.env.DBUSERNAME || 'dev',
+  password : process.env.DBPASSWORD || 'dev1',
   options  : {
-    host     : 'localhost',
+    host     : process.env.DBHOST || 'localhost',
     dialect  : 'postgres',
     logging  : false
   }
