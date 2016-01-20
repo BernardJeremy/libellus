@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import requests
+import traceback
 import sys
 import re
 import psycopg2
@@ -9,7 +10,8 @@ rate_link = None
 refresh_time = 60 * 60 * 24 # refresh every 24 hours
 
 try:
-    conn = psycopg2.connect("dbname=libellus user=dev host=localhost")
+#    conn = psycopg2.connect("dbname=libellus user=dev host=localhost")
+    conn = psycopg2.connect("dbname=libellus user=libellus_api host=localhost")
 except psycopg2.Error as e:
     print('could not connect to db {}'.format(e))
     exit(1)
@@ -43,7 +45,7 @@ def look_for_prof(name):
 
     query_params = {'queryoption':'HEADER',
             'queryBy':'teacherName',
-            'schoolName':'',
+            'schoolName':'California State University Long Beach',
             'schoolID':'',
             'query':name}
 
@@ -60,7 +62,7 @@ def update_teacher(name):
     rating = extract_rating(name)
 
     cur = conn.cursor()
-    cur.execute("UPDATE teachers SET rate = {}, \"rateLastUpdated\" = NOW(), \"rateLink\" = '{}' WHERE name = '{}'".format(rating, rate_link, name))
+    cur.execute("UPDATE teachers SET rate = {}, \"rateLastUpdated\" = NOW(), \"rateLink\" = '{}' WHERE name = '{}'".format(rating, rate_link, name.replace("'", "''")))
     conn.commit()
     print('libellus worker: {} has been updated'.format(name))
 
