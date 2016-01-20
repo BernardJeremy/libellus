@@ -45,22 +45,25 @@ export class HomeView extends React.Component {
 
   render () {
     const rightMenuIcon = <div className={classes['rightMenuContainer']}>
-      <AutoComplete
-        dataSource={this.props.classesName}
-        onNewRequest={this.selectedClass}
-        filter={AutoComplete.caseInsensitiveFilter}
-        style={{color: 'white'}}
-        underlineFocusStyle={{borderColor: Colors.amber900}}
-        hintText='Search'
-        className={classes['searchInput']}/>
+      <div className={classes['searchContainer']}>
+        <AutoComplete
+          dataSource={this.props.classesName}
+          onNewRequest={this.selectedClass}
+          filter={AutoComplete.caseInsensitiveFilter}
+          style={{color: 'white'}}
+          underlineFocusStyle={{borderColor: Colors.amber900}}
+          hintText='Search'
+          className={classes['searchInput']}/>
+        <FontIcon className={classNames(classes['searchIcon'], 'fa fa-search')} />
+      </div>
       <IconButton onClick={this.toggleFilter}>
         <FontIcon className={classNames(classes['showFilterIcon'], 'fa fa-chevron-up', {[classes['flipped']]: this.state.showFilter})} />
       </IconButton>
     </div>
 
     return (
-      <div>
-        <AppBar title='Libellus for CSULB' showMenuIconButton={false} iconElementRight={rightMenuIcon}/>
+      <div className={classes['container']}>
+        <AppBar title='Libellus for CSULB' showMenuIconButton={false} iconElementRight={rightMenuIcon} className={classes['appbar']}/>
         <div className={classNames(classes['filterContainer'], {[classes['hidden']]: !this.state.showFilter})}>
           <CalendarFilter/>
         </div>

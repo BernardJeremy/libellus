@@ -19,7 +19,7 @@ const config = {
   // ----------------------------------
   // Server Configuration
   // ----------------------------------
-  server_host : 'localhost',
+  server_host : '192.168.1.119',
   server_port : process.env.PORT || 3000,
 
   // ----------------------------------
@@ -80,6 +80,8 @@ config.globals = {
   '__DEBUG_NEW_WINDOW__' : !!argv.nw,
   '__BASENAME__' : JSON.stringify(process.env.BASENAME || '')
 }
+
+console.log(argv)
 
 // ------------------------------------
 // Validate Vendor Dependencies

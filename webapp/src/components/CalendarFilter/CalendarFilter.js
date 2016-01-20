@@ -96,8 +96,6 @@ export class CalendarFilter extends React.Component {
         key={level}/>
     })
 
-    console.log(this.props.minSeats)
-
     return (
       <div className={classes['container']}>
         <div className={classes['row']}>

@@ -1,7 +1,16 @@
 .days-container {
   display: flex;
+  @media (max-width: 1200px) {
+    overflow-x: scroll;
+  }
 }
 
 .day-schedule {
+  height: 100%;
   flex: 1;
+  flex-shrink: 0;
+  flex-basis: 200px;
+  @media (max-width: 600px) {
+    flex-basis: 90vw;
+  }
 }

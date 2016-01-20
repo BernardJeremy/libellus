@@ -86,7 +86,7 @@ export class ClassSchedule extends React.Component {
           <p className={classes['title']}>{this.props.data.code} {this.props.data.name}</p>
           <p className={classes['section']}>{this.props.data.section}</p>
           <p className={classes['description']}>{this.props.data.description}</p>
-          <p className={classes['room']}>{this.props.data.room} - {this.props.data.teacher.name} <a target='_blank' href={this.props.data.teacher.rate_link}>{stars}</a></p>
+          <p className={classes['room']}>{this.props.data.room} - {this.props.data.teacher.name} <a target='_blank' href={this.props.data.teacher.rateLink}>{stars}</a></p>
           <Divider />
           <p className={classes['capacity']}>Capacity: {this.props.data.capacity}</p>
           <div className={classes['capacity-details']}>

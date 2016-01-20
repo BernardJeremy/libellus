@@ -12,6 +12,9 @@
   z-index: 100;
   width: 100%;
 }
+.rightMenuContainer {
+  display: flex;
+}
 .hidden {
   transform: translate(0, -100%)
 }
@@ -31,5 +34,28 @@
   font-weight: 500;
   a {
     color: rgba(0, 0, 0, 0.54);
+  }
+}
+.searchIcon {
+  color: white !important;
+  margin-left: 10px;
+}
+.searchContainer {
+  margin-right: 10px;
+  display: flex;
+  align-items: center;
+  &:focus, &:hover {
+    & > *:first-child {
+      @media (max-width: 600px) {
+        width: 256px !important;
+      }
+    }
+  }
+  & > *:first-child {
+    transition: 0.5s width ease;
+    @media (max-width: 600px) {
+      overflow: hidden;
+      width: 0 !important;
+    }
   }
 }

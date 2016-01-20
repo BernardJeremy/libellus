@@ -69,7 +69,7 @@ export class CalendarFilter extends React.Component {
       )
       return (<ListItem
         onTouchTap={this.selectClass(id)}
-        primaryText={`${currentClass.code} ${currentClass.name}`}
+        primaryText={`${currentClass.code} - ${currentClass.section} - ${currentClass.name}`}
         leftIcon={classColorIcon}
         rightIconButton={removeClassButton}
         />)
