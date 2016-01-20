@@ -158,7 +158,7 @@ function findOrCreateTeachers(rawClasses) {
 
 exports.saveClasses = function(termInfo, subjectInfo, classes) {
   var rawClasses = classes;
-  initPromise.then(() => Promise.all([
+  return initPromise.then(() => Promise.all([
     Term.findOrCreate({
       where: {name: termInfo.name}
     }),
@@ -217,5 +217,57 @@ exports.saveSlotInfo = function(subjectInfos, slotInfo) {
   )
   .then((results) => {
     console.log('Updated class: id= %s, slot= %s', results[1][0].dataValues.id, results[1][0].dataValues.slot)
+  })
+}
+
+exports.saveSubjects = function(subjects) {
+  console.log('Saving %d subjects', subjects.length)
+  return initPromise.then(() => {
+    return Promise.all(subjects.map((subject) => {
+      Subject.findOrCreate({
+        where: {code: subject.code},
+        defaults: {
+          code: subject.code,
+          name: subject.name
+        }
+      })
+    }))
+  })
+}
+
+exports.getOldestSlotInArray = function(slotsId, subjectInfo) {
+  return initPromise.then(() =>
+    Subject.findOrCreate({
+      where: {code: subjectInfo.code},
+      defaults: {
+        code: subjectInfo.code,
+        name: subjectInfo.name
+      }
+    })
+  ).then((subject) => {
+    return Class.findOne({
+      where: {
+        subjectId: subject[0].dataValues.id,
+        slot: {$in: slotsId.map((slot) => String(slot))},
+        $or: [
+          {detailsUpdatedAt: {$lt: new Date(new Date() - 1000 * 60 * 60 * 24)}},
+          {detailsUpdatedAt: {$eq: null}}
+        ]
+      },
+      order: [Sequelize.fn( 'RANDOM' )]
+    })
+  }).then((currentClass) => {
+    if (!currentClass) {
+      return false
+    }
+    return currentClass.dataValues.slot
+  }).catch((err) => {
+    console.error('HERE', err, err.stack)
+  })
+}
+
+exports.getRandomSubject = function() {
+  return initPromise.then(() => {
+    return Subject.findOne({ order: [Sequelize.fn( 'RANDOM' )] }).then((subject) => subject.dataValues)
   })
 }
