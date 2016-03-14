@@ -3,6 +3,9 @@ if (!dbConfig) {
   process.exit();
 }
 
-  var Sequelize = require('sequelize');
+var Sequelize = require('sequelize');
 
-module.exports = new Sequelize(dbConfig.database, dbConfig.username, dbConfig.password, dbConfig.options);
+var db = new Sequelize(dbConfig.database, dbConfig.username, dbConfig.password, dbConfig.options);
+
+
+module.exports = db;
