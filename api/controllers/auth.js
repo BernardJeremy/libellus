@@ -10,8 +10,7 @@ var User = require('../models/user');
 
 var opts = {
   jwtFromRequest: ExtractJwt.fromAuthHeader(),
-  secretOrKey: config.jwtSecret,
-  authScheme: 'Bearer'
+  secretOrKey: config.jwtSecret
 }
 passport.use(new JwtStrategy(opts, function(jwt_payload, done) {
   User.findOne({id: jwt_payload.id}).then(function(user) {
